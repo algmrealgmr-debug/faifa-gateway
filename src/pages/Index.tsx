@@ -1,4 +1,4 @@
-import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home } from "lucide-react";
+import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import CategorySection from "@/components/CategorySection";
@@ -95,6 +95,20 @@ const Index = () => {
           <PlaceCard
             title="مطل قرضة – Qarza Viewpoint"
             mapLink="https://maps.app.goo.gl/yibESTRS7VWEYEKz6?g_st=ipc"
+            icon={<Binoculars />}
+          />
+          <PlaceCard
+            title="المصلى المعلق"
+            description="مصلى للأعياد والمناسبات مشهور جداً."
+            englishDescription="Famous hanging mosque for holidays and occasions."
+            mapLink="https://maps.app.goo.gl/kxuvxMzVTKzSKJ7Y9?g_st=ipc"
+            icon={<Church />}
+          />
+          <PlaceCard
+            title="مطل العبسية"
+            description="أعلى نقطة في الجبل يمكن لشخص الجلوس في أي مكان."
+            englishDescription="The highest point in the mountain where one can sit anywhere."
+            mapLink="https://maps.app.goo.gl/7oTLeZDz1Pbap2Tk8?g_st=ipc"
             icon={<Binoculars />}
           />
         </CategorySection>
