@@ -6,11 +6,12 @@ interface PlaceCardProps {
   title: string;
   description?: string;
   englishDescription?: string;
+  additionalContent?: React.ReactNode;
   mapLink: string;
   icon: React.ReactNode;
 }
 
-const PlaceCard = ({ title, description, englishDescription, mapLink, icon }: PlaceCardProps) => {
+const PlaceCard = ({ title, description, englishDescription, additionalContent, mapLink, icon }: PlaceCardProps) => {
   return (
     <Card className="group hover:shadow-card transition-all duration-300 hover:-translate-y-1 border-0 shadow-md">
       <CardContent className="p-6">
@@ -24,7 +25,7 @@ const PlaceCard = ({ title, description, englishDescription, mapLink, icon }: Pl
             </h3>
           </div>
           
-          {(description || englishDescription) && (
+          {(description || englishDescription || additionalContent) && (
             <div className="bg-muted/50 p-4 rounded-lg border-r-4 border-secondary space-y-2">
               {description && (
                 <p className="text-foreground leading-relaxed">{description}</p>
@@ -33,6 +34,11 @@ const PlaceCard = ({ title, description, englishDescription, mapLink, icon }: Pl
                 <p className="text-muted-foreground text-sm italic leading-relaxed">
                   {englishDescription}
                 </p>
+              )}
+              {additionalContent && (
+                <div className="text-foreground leading-relaxed">
+                  {additionalContent}
+                </div>
               )}
             </div>
           )}

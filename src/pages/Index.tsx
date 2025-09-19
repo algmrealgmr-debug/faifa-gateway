@@ -1,4 +1,4 @@
-import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent } from "lucide-react";
+import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import CategorySection from "@/components/CategorySection";
@@ -39,6 +39,26 @@ const Index = () => {
             englishDescription="Rooftop café with a scenic view."
             mapLink="https://maps.app.goo.gl/TvqSciP5UrBrPBNS8?g_st=ipc"
             icon={<Bed />}
+          />
+          <PlaceCard
+            title="بيت سهلان"
+            description="بيت عتيق أعيد بريح عصرية وهوية فيفية أصيلة."
+            englishDescription="An old house renovated with a modern touch and authentic Faifa identity."
+            additionalContent={
+              <p>
+                للحجز أو التواصل: الإنستقرام{" "}
+                <a 
+                  href="https://www.instagram.com/bieatsahlan" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-accent hover:text-accent/80 transition-colors"
+                >
+                  bieatsahlan
+                </a>
+              </p>
+            }
+            mapLink="https://maps.app.goo.gl/ZgDkhJv2dHvs69oQ8?g_st=ipc"
+            icon={<Home />}
           />
         </CategorySection>
 
