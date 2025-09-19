@@ -119,6 +119,25 @@ const Index = () => {
             mapLink="https://maps.app.goo.gl/yWadi31KNE7ykdN86?g_st=ipc"
             icon={<Coffee />}
           />
+          <PlaceCard
+            title="مقهى سكون"
+            description="إطلالة جميلة ورائعة على الجبال."
+            englishDescription="Beautiful and amazing view of the mountains."
+            mapLink="https://maps.app.goo.gl/RA3bdJW8rLZzjTFi9?g_st=ipc"
+            icon={<Coffee />}
+          />
+          <PlaceCard
+            title="كافية تالقة"
+            description="مقهى جديد وجميل واسم مقتبس من شجرة مُعمرة في الجبل."
+            englishDescription="New and beautiful café named after an ancient tree in the mountain."
+            mapLink="https://maps.app.goo.gl/9MfLxBT1AghGifAR8?g_st=ipc"
+            icon={<Coffee />}
+          />
+          <PlaceCard
+            title="لب القهوة"
+            mapLink="https://maps.app.goo.gl/EJ1xKPEnpdgGF9Z3A?g_st=ipc"
+            icon={<Coffee />}
+          />
         </CategorySection>
       </main>
 
