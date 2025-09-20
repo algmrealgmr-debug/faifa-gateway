@@ -22,7 +22,7 @@ const Header = () => {
             اكتشف فيفاء
           </h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            استمتع بجمال الطبيعة الخلابة وأهم المعالم السياحية في جبل فيفاء
+            استمتع بالجمال الساحر لجوهرة المملكة العربية السعودية الجبلية المخفية، حيث تلتقي التقاليد العريقة بالمناظر الطبيعية الخلابة
           </p>
           <div className="mt-8 animate-float">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 text-primary-foreground">
