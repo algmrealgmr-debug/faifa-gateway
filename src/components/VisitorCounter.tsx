@@ -4,8 +4,8 @@ const VisitorCounter = () => {
   const [visitorCount, setVisitorCount] = useState(0);
 
   useEffect(() => {
-    // Get count from localStorage or default to 0
-    let count = parseInt(localStorage.getItem("visitor-count") || "0");
+    // Get count from localStorage or default to 5078
+    let count = parseInt(localStorage.getItem("visitor-count") || "5078");
     count++;
     localStorage.setItem("visitor-count", count.toString());
     setVisitorCount(count);
