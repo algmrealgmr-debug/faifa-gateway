@@ -13,11 +13,8 @@ const Index = () => {
       <Header />
       <Navigation />
       
-      {/* Guide Title Section */}
+      {/* Visitor Counter Section */}
       <section className="container mx-auto px-6 py-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-          دليلك الشامل والمبسط لجميع اماكن فيفاء🗺️
-        </h2>
         <VisitorCounter />
       </section>
       
