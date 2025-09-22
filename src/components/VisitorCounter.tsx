@@ -1,22 +1,29 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 const VisitorCounter = () => {
-  const [visitorCount, setVisitorCount] = useState(0);
-
   useEffect(() => {
-    // Start from 5000 if no count exists or if current count is less than 5000
-    let count = parseInt(localStorage.getItem("visitor-count") || "0");
-    if (!count || count < 5000) {
-      count = 5000;
-    }
-    count++;
-    localStorage.setItem("visitor-count", count.toString());
-    setVisitorCount(count);
+    // Load the auth script
+    const authScript = document.createElement('script');
+    authScript.type = 'text/javascript';
+    authScript.src = 'https://www.freevisitorcounters.com/auth.php?id=9a930772b69f2e8e2023536efc164e470f548927';
+    document.head.appendChild(authScript);
+
+    // Load the counter script
+    const counterScript = document.createElement('script');
+    counterScript.type = 'text/javascript';
+    counterScript.src = 'https://www.freevisitorcounters.com/en/home/counter/1394168/t/5';
+    document.head.appendChild(counterScript);
+
+    return () => {
+      // Cleanup scripts on unmount
+      document.head.removeChild(authScript);
+      document.head.removeChild(counterScript);
+    };
   }, []);
 
   return (
     <div className="text-center text-sm text-muted-foreground mt-5">
-      عدد الزوار: <span className="font-semibold">{visitorCount}</span>
+      <a href='http://www.freevisitorcounters.com' className="text-accent hover:text-accent/80 transition-colors">Free Counters</a>
     </div>
   );
 };
