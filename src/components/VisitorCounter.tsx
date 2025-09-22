@@ -1,29 +1,31 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const VisitorCounter = () => {
+  const [visitorCount, setVisitorCount] = useState(5078);
+
   useEffect(() => {
-    // Load the auth script
-    const authScript = document.createElement('script');
-    authScript.type = 'text/javascript';
-    authScript.src = 'https://www.freevisitorcounters.com/auth.php?id=9a930772b69f2e8e2023536efc164e470f548927';
-    document.head.appendChild(authScript);
+    // نقرأ العدد من LocalStorage
+    let countStr = localStorage.getItem("visitor-count");
+    let count: number;
 
-    // Load the counter script
-    const counterScript = document.createElement('script');
-    counterScript.type = 'text/javascript';
-    counterScript.src = 'https://www.freevisitorcounters.com/en/home/counter/1394168/t/5';
-    document.head.appendChild(counterScript);
+    if (!countStr) {
+      // إذا ما فيه عدد محفوظ، نبدأ من 5078
+      count = 5078;
+    } else {
+      count = parseInt(countStr);
+      count++;
+    }
 
-    return () => {
-      // Cleanup scripts on unmount
-      document.head.removeChild(authScript);
-      document.head.removeChild(counterScript);
-    };
+    // نخزنه في LocalStorage عشان يبقى ثابت على نفس المتصفح
+    localStorage.setItem("visitor-count", count.toString());
+
+    // نعرض العدد
+    setVisitorCount(count);
   }, []);
 
   return (
     <div className="text-center text-sm text-muted-foreground mt-5">
-      <a href='http://www.freevisitorcounters.com' className="text-accent hover:text-accent/80 transition-colors">Free Counters</a>
+      عدد الزوار: <span className="font-semibold">{visitorCount}</span>
     </div>
   );
 };
