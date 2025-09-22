@@ -5,7 +5,6 @@ import CategorySection from "@/components/CategorySection";
 import PlaceCard from "@/components/PlaceCard";
 import DeveloperSection from "@/components/DeveloperSection";
 import Footer from "@/components/Footer";
-import VisitorCounter from "@/components/VisitorCounter";
 
 const Index = () => {
   return (
@@ -18,7 +17,6 @@ const Index = () => {
         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
           دليلك الشامل والمبسط لجميع اماكن فيفاء🗺️
         </h2>
-        <VisitorCounter />
       </section>
       
       <main className="container mx-auto px-6 py-12 space-y-12">
