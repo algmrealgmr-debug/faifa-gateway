@@ -1,4 +1,4 @@
-import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church } from "lucide-react";
+import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import CategorySection from "@/components/CategorySection";
@@ -51,15 +51,15 @@ const Index = () => {
             description="بيت عتيق أعيد بريح عصرية وهوية فيفية أصيلة."
             englishDescription="An old house renovated with a modern touch and authentic Faifa identity."
             additionalContent={
-              <p>
+              <p className="flex items-center gap-2">
                 للحجز أو التواصل: الإنستقرام{" "}
                 <a 
                   href="https://www.instagram.com/bieatsahlan" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-accent hover:text-accent/80 transition-colors"
+                  className="text-accent hover:text-accent/80 transition-colors inline-flex"
                 >
-                  bieatsahlan
+                  <Instagram size={18} />
                 </a>
               </p>
             }
