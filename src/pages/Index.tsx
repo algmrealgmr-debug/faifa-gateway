@@ -82,6 +82,12 @@ const Index = () => {
             icon={<Mountain />}
           />
           <PlaceCard
+            title="سوق النفيعة الشعبي"
+            description="تجربة تسوق بروح فيفاء، حيث تلتقي المحلات التراثية بمنتجات الجبال الأصيلة، في بيئة تعبّر عن هوية المكان."
+            mapLink="https://maps.app.goo.gl/TzAGVeryF34ooRbh7?g_st=ipc"
+            icon={<Trees />}
+          />
+          <PlaceCard
             title="منتجع الباخرة – Al-Bakhira Resort"
             mapLink="https://maps.app.goo.gl/4No4mWgXs3vVz7CD7?g_st=ipc"
             icon={<Tent />}
