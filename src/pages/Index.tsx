@@ -129,7 +129,7 @@ const Index = () => {
             title="مقهى جارة القمر – Jarat Al-Qamar Café"
             description="إطلالة مميزة على جبال فيفاء."
             englishDescription="Unique view of Faifa mountains."
-            mapLink="https://maps.app.goo.gl/WgVpyAjaoCbnZRX56?g_st=ipc"
+            mapLink="https://maps.app.goo.gl/Cjh7oPM5aX2QsdUR6?g_st=ipc"
             icon={<Coffee />}
           />
           <PlaceCard
