@@ -133,6 +133,13 @@ const Index = () => {
             icon={<Coffee />}
           />
           <PlaceCard
+            title="مقهى جارة الغيم – Jarat Al-Ghaim Café"
+            description="مطل على الجبال من الأعلى."
+            englishDescription="Mountaintop view from above."
+            mapLink="https://maps.app.goo.gl/FekVqv8zkzj5Fuk97?g_st=ipc"
+            icon={<Coffee />}
+          />
+          <PlaceCard
             title="مقهى ومطل إيوان – Iwan Café & Viewpoint"
             description="كافيه مع إطلالة جميلة."
             englishDescription="Café with a beautiful scenic view."
