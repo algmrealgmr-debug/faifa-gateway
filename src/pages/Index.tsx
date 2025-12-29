@@ -58,7 +58,7 @@ const Index = () => {
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 <Instagram size={16} />
-                <span>احجز عبر إنستقرام</span>
+                <span>للحجز والتواصل عبر الأنستقرام</span>
               </a>
             }
             mapLink="https://maps.app.goo.gl/ZgDkhJv2dHvs69oQ8?g_st=ipc"
