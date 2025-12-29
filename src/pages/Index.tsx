@@ -51,17 +51,15 @@ const Index = () => {
             description="بيت عتيق أعيد بريح عصرية وهوية فيفية أصيلة."
             englishDescription="An old house renovated with a modern touch and authentic Faifa identity."
             additionalContent={
-              <p className="flex items-center gap-2">
-                للحجز أو التواصل: الإنستقرام{" "}
-                <a 
-                  href="https://www.instagram.com/bieatsahlan" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-accent hover:text-accent/80 transition-colors inline-flex"
-                >
-                  <Instagram size={18} />
-                </a>
-              </p>
+              <a 
+                href="https://www.instagram.com/bieatsahlan" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                <Instagram size={16} />
+                <span>احجز عبر إنستقرام</span>
+              </a>
             }
             mapLink="https://maps.app.goo.gl/ZgDkhJv2dHvs69oQ8?g_st=ipc"
             icon={<Home />}
