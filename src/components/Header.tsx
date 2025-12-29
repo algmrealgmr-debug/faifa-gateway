@@ -18,8 +18,8 @@ const Header = () => {
             استمتع بالجمال الساحر لجوهرة المملكة العربية السعودية الجبلية المخفية، حيث تلتقي التقاليد العريقة بالمناظر الطبيعية الخلابة
           </p>
           <div className="mt-8 animate-float">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 text-white">
-              <span className="text-sm">اكتشف الجمال الطبيعي</span>
+          <div className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 text-white">
+              <span className="text-sm font-medium">ابدأ الرحلة</span>
               <span className="text-accent">🏔️</span>
             </div>
           </div>
