@@ -10,16 +10,21 @@ interface WeatherData {
 const FAIFA_LAT = 17.2580;
 const FAIFA_LNG = 43.1130;
 
-const getWeatherIcon = (code: number) => {
-  // WMO Weather interpretation codes
-  if (code === 0) return Sun; // Clear sky
-  if (code >= 1 && code <= 3) return Cloud; // Partly cloudy
-  if (code >= 45 && code <= 48) return CloudFog; // Fog
-  if (code >= 51 && code <= 67) return CloudRain; // Drizzle/Rain
-  if (code >= 71 && code <= 77) return CloudSnow; // Snow
-  if (code >= 80 && code <= 82) return CloudRain; // Rain showers
-  if (code >= 95 && code <= 99) return CloudRain; // Thunderstorm
-  return Cloud;
+const getWeatherInfo = (code: number): { icon: typeof Sun; description: string } => {
+  // WMO Weather interpretation codes with Arabic descriptions
+  if (code === 0) return { icon: Sun, description: "مشمس" };
+  if (code === 1) return { icon: Sun, description: "صافٍ" };
+  if (code === 2) return { icon: Cloud, description: "غائم جزئياً" };
+  if (code === 3) return { icon: Cloud, description: "غائم" };
+  if (code >= 45 && code <= 48) return { icon: CloudFog, description: "ضبابي" };
+  if (code >= 51 && code <= 55) return { icon: CloudRain, description: "رذاذ" };
+  if (code >= 56 && code <= 57) return { icon: CloudRain, description: "رذاذ متجمد" };
+  if (code >= 61 && code <= 65) return { icon: CloudRain, description: "ممطر" };
+  if (code >= 66 && code <= 67) return { icon: CloudRain, description: "مطر متجمد" };
+  if (code >= 71 && code <= 77) return { icon: CloudSnow, description: "ثلجي" };
+  if (code >= 80 && code <= 82) return { icon: CloudRain, description: "زخات مطر" };
+  if (code >= 95 && code <= 99) return { icon: CloudRain, description: "عاصفة رعدية" };
+  return { icon: Cloud, description: "غائم" };
 };
 
 const WeatherWidget = () => {
@@ -69,13 +74,17 @@ const WeatherWidget = () => {
 
   if (!weather) return null;
 
-  const WeatherIcon = getWeatherIcon(weather.weatherCode);
+  const weatherInfo = getWeatherInfo(weather.weatherCode);
+  const WeatherIcon = weatherInfo.icon;
 
   return (
     <div className="flex items-center gap-2 text-white/90 backdrop-blur-sm bg-white/5 rounded-full px-3 py-1.5 border border-white/10">
       <WeatherIcon className="w-4 h-4" strokeWidth={1.5} />
       <span className="text-sm font-light tracking-wide">
         {weather.temperature}°C
+      </span>
+      <span className="text-xs font-light opacity-90">
+        {weatherInfo.description}
       </span>
     </div>
   );
