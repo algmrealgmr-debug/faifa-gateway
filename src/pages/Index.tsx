@@ -6,7 +6,7 @@ import PlaceCard from "@/components/PlaceCard";
 import DeveloperSection from "@/components/DeveloperSection";
 import Footer from "@/components/Footer";
 import VisitorCounter from "@/components/VisitorCounter";
-
+import InteractiveMap from "@/components/InteractiveMap";
 const Index = () => {
   return (
     <div className="min-h-screen" dir="rtl">
@@ -171,6 +171,11 @@ const Index = () => {
           />
         </CategorySection>
       </main>
+
+      {/* Interactive Map Section */}
+      <div className="container mx-auto px-6">
+        <InteractiveMap />
+      </div>
 
       <div className="container mx-auto px-6 mb-12">
         <DeveloperSection />
