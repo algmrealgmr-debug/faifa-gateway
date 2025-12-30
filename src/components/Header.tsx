@@ -1,4 +1,5 @@
 import heroImage from "@/assets/faifa-hero-new.jpg";
+import WeatherWidget from "./WeatherWidget";
 
 const Header = () => {
   return (
@@ -8,6 +9,11 @@ const Header = () => {
         '--hero-bg-image': `url(${heroImage})`,
       } as React.CSSProperties & { '--hero-bg-image': string }}
     >
+      {/* Weather Widget - Top Right */}
+      <div className="absolute top-6 left-6 z-20">
+        <WeatherWidget />
+      </div>
+
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 py-20 text-center min-h-screen flex items-center">
         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
