@@ -4,7 +4,7 @@ import WeatherWidget from "./WeatherWidget";
 const Header = () => {
   return (
     <header 
-      className="main-hero relative overflow-hidden min-h-screen"
+      className="main-hero relative overflow-hidden min-h-[75vh] md:min-h-screen"
       style={{
         '--hero-bg-image': `url(${heroImage})`,
       } as React.CSSProperties & { '--hero-bg-image': string }}
@@ -15,7 +15,7 @@ const Header = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 py-20 text-center min-h-screen flex items-center">
+      <div className="relative z-10 container mx-auto px-6 py-16 md:py-20 text-center min-h-[75vh] md:min-h-screen flex items-center">
         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
             اكتشف فيفاء
