@@ -76,6 +76,7 @@ export default {
         'nature': 'var(--shadow-nature)',
         'glow': 'var(--shadow-glow)',
         'card': 'var(--shadow-card)',
+        'soft': 'var(--shadow-soft)',
       },
       borderRadius: {
         lg: "var(--radius)",

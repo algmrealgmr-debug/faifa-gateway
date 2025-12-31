@@ -6,53 +6,54 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96%;
-    --foreground: 120 15% 15%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 120 15% 15%;
+    --card-foreground: 0 0% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 120 15% 15%;
+    --popover-foreground: 0 0% 20%;
 
-    /* Faifa Mountain Theme */
-    --primary: 142 45% 18%; /* Deep forest green #2a6a3f */
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 142 45% 25%;
+    /* Minimalist Forest Green Theme */
+    --primary: 152 35% 35%; /* Soft forest green */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 152 35% 45%;
 
-    --secondary: 142 35% 38%; /* Mountain green #4a9e5f */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%; /* Light gray */
+    --secondary-foreground: 0 0% 25%;
 
-    --muted: 120 10% 96%;
-    --muted-foreground: 120 8% 46%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 45 75% 52%; /* Golden accent #d4af37 */
-    --accent-foreground: 120 15% 15%;
+    --accent: 152 30% 45%; /* Softer green accent */
+    --accent-foreground: 0 0% 100%;
 
-    --nature: 142 55% 28%; /* Vibrant nature green */
-    --nature-foreground: 0 0% 98%;
+    --nature: 152 35% 35%;
+    --nature-foreground: 0 0% 100%;
 
-    --mountain: 120 25% 12%; /* Dark mountain #1e3a2c */
-    --mountain-foreground: 0 0% 98%;
+    --mountain: 0 0% 15%;
+    --mountain-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 120 15% 87%;
-    --input: 120 15% 87%;
-    --ring: 142 45% 18%;
+    --border: 0 0% 92%;
+    --input: 0 0% 92%;
+    --ring: 152 35% 35%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
-    --gradient-card: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--primary)));
+    /* Gradients - kept subtle */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(152 35% 42%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 99%));
     --gradient-nature: linear-gradient(180deg, hsl(var(--nature)), hsl(var(--primary)));
     
-    /* Shadows */
-    --shadow-nature: 0 10px 30px -10px hsl(var(--primary) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
-    --shadow-card: 0 8px 25px -5px hsl(var(--primary) / 0.15);
+    /* Soft shadows */
+    --shadow-soft: 0 1px 3px hsl(0 0% 0% / 0.04), 0 4px 12px hsl(0 0% 0% / 0.06);
+    --shadow-card: 0 2px 8px hsl(0 0% 0% / 0.04), 0 8px 24px hsl(0 0% 0% / 0.06);
+    --shadow-nature: 0 4px 16px hsl(var(--primary) / 0.1);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.2);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

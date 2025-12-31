@@ -18,7 +18,7 @@ const Index = () => {
         <VisitorCounter />
       </section>
       
-      <main className="container mx-auto px-6 py-12 space-y-12">
+      <main className="container mx-auto px-6 md:px-8 py-16 space-y-20">
         {/* Hotels Section */}
         <CategorySection
           id="hotels"
