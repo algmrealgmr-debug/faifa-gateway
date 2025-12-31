@@ -265,7 +265,7 @@ const InteractiveMap = () => {
           {/* Embedded Google Map */}
           <div className="relative w-full h-[400px] md:h-[500px]">
             <iframe
-              src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d30000!2d${center.lng}!3d${center.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sar!2ssa!4v1703936400000!5m2!1sar!2ssa`}
+              src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d8000!2d${center.lng}!3d${center.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sar!2ssa!4v1703936400000!5m2!1sar!2ssa`}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -278,6 +278,47 @@ const InteractiveMap = () => {
             
             {/* Custom Overlay with Markers */}
             <div className="absolute inset-0 pointer-events-none">
+              {/* Dynamic Markers */}
+              {filteredLocations.map((location) => {
+                // Convert lat/lng to percentage positions relative to map bounds
+                const mapBounds = {
+                  north: 17.270,
+                  south: 17.248,
+                  east: 43.125,
+                  west: 43.100
+                };
+                
+                const x = ((location.lng - mapBounds.west) / (mapBounds.east - mapBounds.west)) * 100;
+                const y = ((mapBounds.north - location.lat) / (mapBounds.north - mapBounds.south)) * 100;
+                
+                // Only show markers within bounds
+                if (x < 0 || x > 100 || y < 0 || y > 100) return null;
+                
+                return (
+                  <div
+                    key={location.id}
+                    className="absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-full group"
+                    style={{ left: `${x}%`, top: `${y}%` }}
+                    onClick={() => handleMarkerClick(location)}
+                  >
+                    {/* Marker Pin */}
+                    <div className={`relative ${typeColors[location.type].bg} w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white transition-transform hover:scale-125 z-10`}>
+                      <MapPin className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                    </div>
+                    {/* Pin Tail */}
+                    <div className={`absolute left-1/2 -translate-x-1/2 -bottom-1 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] ${location.type === 'hotel' ? 'border-t-blue-500' : location.type === 'park' ? 'border-t-green-500' : 'border-t-amber-500'} border-l-transparent border-r-transparent`}></div>
+                    
+                    {/* Tooltip on hover */}
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
+                      <div className="bg-card/95 backdrop-blur-sm rounded-lg p-2 shadow-lg whitespace-nowrap border border-border">
+                        <p className="text-xs font-semibold text-foreground">{location.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{location.nameEn}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              
               {/* Map Legend */}
               <div className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm rounded-lg p-3 shadow-lg pointer-events-auto">
                 <p className="text-xs font-semibold text-foreground mb-2">دليل الألوان:</p>
@@ -300,6 +341,40 @@ const InteractiveMap = () => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Selected Location Popup */}
+      {selectedLocation && (
+        <div className="mt-4 p-4 bg-card rounded-lg shadow-soft border border-border animate-in fade-in slide-in-from-bottom-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-full ${typeColors[selectedLocation.type].bg} flex items-center justify-center text-white`}>
+                <MapPin size={20} />
+              </div>
+              <div>
+                <h4 className="font-bold text-foreground">{selectedLocation.name}</h4>
+                <p className="text-sm text-muted-foreground">{selectedLocation.nameEn}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                className="bg-primary hover:bg-secondary"
+                onClick={() => handleOpenInMaps(selectedLocation.mapLink)}
+              >
+                <Navigation className="w-4 h-4 ml-2" />
+                افتح في خرائط قوقل
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setSelectedLocation(null)}
+              >
+                <X size={16} />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Location Cards Grid */}
       <div className="mt-8">
@@ -349,53 +424,6 @@ const InteractiveMap = () => {
         </div>
       </div>
 
-      {/* Selected Location Modal */}
-      {selectedLocation && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedLocation(null)}
-        >
-          <Card 
-            className="w-full max-w-md animate-in fade-in zoom-in duration-300"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-full ${typeColors[selectedLocation.type].bg} flex items-center justify-center text-white`}>
-                    <MapPin size={24} />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{selectedLocation.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{selectedLocation.nameEn}</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => setSelectedLocation(null)}
-                >
-                  <X size={20} />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
-                <span className={`px-3 py-1 rounded-full text-sm ${typeColors[selectedLocation.type].bg} text-white`}>
-                  {typeLabels[selectedLocation.type].ar} / {typeLabels[selectedLocation.type].en}
-                </span>
-              </div>
-              <Button
-                className="w-full bg-primary hover:bg-secondary text-primary-foreground"
-                onClick={() => handleOpenInMaps(selectedLocation.mapLink)}
-              >
-                <Navigation className="w-5 h-5 ml-2" />
-                افتح في خرائط قوقل / Open in Google Maps
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </section>
   );
 };
