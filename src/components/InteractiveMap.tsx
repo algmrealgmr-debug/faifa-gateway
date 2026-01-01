@@ -426,54 +426,6 @@ const InteractiveMap = () => {
         </div>
       )}
 
-      {/* Location Cards Grid */}
-      <div className="mt-8">
-        <h3 className="text-xl font-bold text-primary mb-4 text-center">
-          اختر موقعاً للانتقال إليه / Select a location
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredLocations.map((location) => (
-            <Card 
-              key={location.id}
-              className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-r-4 ${typeColors[location.type].border} ${
-                selectedLocation?.id === location.id ? "ring-2 ring-primary shadow-lg" : ""
-              }`}
-              onClick={() => handleMarkerClick(location)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 rounded-full ${typeColors[location.type].bg} flex items-center justify-center text-white flex-shrink-0`}>
-                    <MapPin size={20} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-foreground text-sm leading-tight mb-1 truncate">
-                      {location.name}
-                    </h4>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {location.nameEn}
-                    </p>
-                    <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${typeColors[location.type].bg} text-white`}>
-                      {typeLabels[location.type].ar}
-                    </span>
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  className="w-full mt-3 bg-primary hover:bg-secondary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenInMaps(location.mapLink);
-                  }}
-                >
-                  <Navigation className="w-4 h-4 ml-2" />
-                  افتح في خرائط قوقل
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
     </section>
   );
 };
