@@ -1,10 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { MapPin, Navigation, X, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 
 interface Location {
   id: string;
@@ -225,11 +225,7 @@ const createCustomIcon = (type: "hotel" | "park" | "cafe") => {
 // Component to handle map view changes when filter changes
 const MapController = ({ center }: { center: [number, number] }) => {
   const map = useMap();
-  
-  useEffect(() => {
-    map.setView(center, map.getZoom());
-  }, [map, center]);
-  
+  map.setView(center, map.getZoom());
   return null;
 };
 
