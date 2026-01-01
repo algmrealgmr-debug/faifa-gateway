@@ -1,7 +1,15 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { MapPin, Navigation, X, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+declare global {
+  interface Window {
+    google: any;
+    initMap: () => void;
+  }
+}
 
 interface Location {
   id: string;
@@ -197,6 +205,12 @@ const typeLabels = {
 const InteractiveMap = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [filter, setFilter] = useState<"all" | "hotel" | "park" | "cafe">("all");
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const googleMapRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+
+  const center = { lat: 17.2580, lng: 43.1130 };
 
   const filteredLocations = filter === "all" 
     ? locations 
@@ -210,8 +224,110 @@ const InteractiveMap = () => {
     window.open(mapLink, "_blank", "noopener,noreferrer");
   }, []);
 
-  // Center of Faifa
-  const center = { lat: 17.2580, lng: 43.1130 };
+  const markerColors = {
+    hotel: "#3b82f6",
+    park: "#22c55e", 
+    cafe: "#f59e0b"
+  };
+
+  // Load Google Maps script
+  useEffect(() => {
+    if (window.google?.maps) {
+      setMapLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&libraries=marker&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+
+    window.initMap = () => {
+      setMapLoaded(true);
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      delete window.initMap;
+    };
+  }, []);
+
+  // Initialize map once loaded
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current || googleMapRef.current) return;
+
+    googleMapRef.current = new window.google.maps.Map(mapRef.current, {
+      center,
+      zoom: 14,
+      mapId: "faifa-map",
+      disableDefaultUI: false,
+      zoomControl: true,
+      mapTypeControl: true,
+      streetViewControl: false,
+      fullscreenControl: true,
+    });
+  }, [mapLoaded]);
+
+  // Update markers when filter changes
+  useEffect(() => {
+    if (!mapLoaded || !googleMapRef.current) return;
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => {
+      marker.map = null;
+    });
+    markersRef.current = [];
+
+    // Create new markers
+    filteredLocations.forEach((location) => {
+      const pinElement = document.createElement("div");
+      pinElement.innerHTML = `
+        <div style="
+          background-color: ${markerColors[location.type]};
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: transform 0.2s;
+        ">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+      `;
+
+      pinElement.addEventListener("mouseenter", () => {
+        pinElement.firstElementChild?.setAttribute("style", 
+          pinElement.firstElementChild.getAttribute("style")?.replace("transform 0.2s", "transform 0.2s; transform: scale(1.2)") || ""
+        );
+      });
+      pinElement.addEventListener("mouseleave", () => {
+        pinElement.firstElementChild?.setAttribute("style",
+          pinElement.firstElementChild.getAttribute("style")?.replace("transform: scale(1.2)", "") || ""
+        );
+      });
+
+      const marker = new window.google.maps.marker.AdvancedMarkerElement({
+        map: googleMapRef.current!,
+        position: { lat: location.lat, lng: location.lng },
+        title: location.name,
+        content: pinElement,
+      });
+
+      marker.addListener("click", () => {
+        handleMarkerClick(location);
+      });
+
+      markersRef.current.push(marker);
+    });
+  }, [mapLoaded, filteredLocations, handleMarkerClick]);
 
   return (
     <section id="map" className="py-12">
@@ -262,82 +378,16 @@ const InteractiveMap = () => {
       {/* Map Container */}
       <Card className="overflow-hidden shadow-lg border-2 border-primary/20">
         <CardContent className="p-0 relative">
-          {/* Embedded Google Map */}
           <div className="relative w-full h-[400px] md:h-[500px]">
-            <iframe
-              src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d8000!2d${center.lng}!3d${center.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sar!2ssa!4v1703936400000!5m2!1sar!2ssa`}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="absolute inset-0"
-              title="Faifa Map"
-            />
-            
-            {/* Custom Overlay with Markers */}
-            <div className="absolute inset-0 pointer-events-none">
-              {/* Dynamic Markers */}
-              {filteredLocations.map((location) => {
-                // Convert lat/lng to percentage positions relative to map bounds
-                const mapBounds = {
-                  north: 17.270,
-                  south: 17.248,
-                  east: 43.125,
-                  west: 43.100
-                };
-                
-                const x = ((location.lng - mapBounds.west) / (mapBounds.east - mapBounds.west)) * 100;
-                const y = ((mapBounds.north - location.lat) / (mapBounds.north - mapBounds.south)) * 100;
-                
-                // Only show markers within bounds
-                if (x < 0 || x > 100 || y < 0 || y > 100) return null;
-                
-                return (
-                  <div
-                    key={location.id}
-                    className="absolute pointer-events-auto cursor-pointer transform -translate-x-1/2 -translate-y-full group"
-                    style={{ left: `${x}%`, top: `${y}%` }}
-                    onClick={() => handleMarkerClick(location)}
-                  >
-                    {/* Marker Pin */}
-                    <div className={`relative ${typeColors[location.type].bg} w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white transition-transform hover:scale-125 z-10`}>
-                      <MapPin className="w-3 h-3 md:w-4 md:h-4 text-white" />
-                    </div>
-                    {/* Pin Tail */}
-                    <div className={`absolute left-1/2 -translate-x-1/2 -bottom-1 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] ${location.type === 'hotel' ? 'border-t-blue-500' : location.type === 'park' ? 'border-t-green-500' : 'border-t-amber-500'} border-l-transparent border-r-transparent`}></div>
-                    
-                    {/* Tooltip on hover */}
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
-                      <div className="bg-card/95 backdrop-blur-sm rounded-lg p-2 shadow-lg whitespace-nowrap border border-border">
-                        <p className="text-xs font-semibold text-foreground">{location.name}</p>
-                        <p className="text-[10px] text-muted-foreground">{location.nameEn}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              
-              {/* Map Legend */}
-              <div className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm rounded-lg p-3 shadow-lg pointer-events-auto">
-                <p className="text-xs font-semibold text-foreground mb-2">دليل الألوان:</p>
-                <div className="space-y-1 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                    <span className="text-muted-foreground">فنادق</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                    <span className="text-muted-foreground">منتزهات</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-amber-500"></span>
-                    <span className="text-muted-foreground">كافيهات</span>
-                  </div>
+            {!mapLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                  <p className="text-sm text-muted-foreground">جاري تحميل الخريطة...</p>
                 </div>
               </div>
-            </div>
+            )}
+            <div ref={mapRef} className="w-full h-full" />
           </div>
         </CardContent>
       </Card>
