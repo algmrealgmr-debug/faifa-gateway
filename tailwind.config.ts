@@ -108,12 +108,54 @@ export default {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "butterfly-flight": {
+          "0%": { 
+            transform: "translateX(0) translateY(0) rotate(5deg)",
+            opacity: "1"
+          },
+          "20%": { 
+            transform: "translateX(-30vw) translateY(-10vh) rotate(-5deg)",
+            opacity: "1"
+          },
+          "40%": { 
+            transform: "translateX(-50vw) translateY(5vh) rotate(5deg)",
+            opacity: "1"
+          },
+          "60%": { 
+            transform: "translateX(-70vw) translateY(-15vh) rotate(-5deg)",
+            opacity: "1"
+          },
+          "80%": { 
+            transform: "translateX(-90vw) translateY(0) rotate(5deg)",
+            opacity: "0.8"
+          },
+          "100%": { 
+            transform: "translateX(-110vw) translateY(-20vh) rotate(-5deg)",
+            opacity: "0"
+          },
+        },
+        "wing-left": {
+          "0%, 100%": { transform: "rotate(-20deg) scaleX(1)" },
+          "50%": { transform: "rotate(-20deg) scaleX(0.6)" },
+        },
+        "wing-right": {
+          "0%, 100%": { transform: "rotate(20deg) scaleX(1)" },
+          "50%": { transform: "rotate(20deg) scaleX(0.6)" },
+        },
+        "tail-wag": {
+          "0%, 100%": { transform: "rotate(-20deg)" },
+          "50%": { transform: "rotate(-10deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "float": "float 3s ease-in-out infinite",
         "fade-in": "fade-in 0.6s ease-out",
+        "butterfly-flight": "butterfly-flight 4s ease-in-out forwards",
+        "wing-left": "wing-left 0.15s ease-in-out infinite",
+        "wing-right": "wing-right 0.15s ease-in-out infinite",
+        "tail-wag": "tail-wag 0.8s ease-in-out infinite",
       },
     },
   },
