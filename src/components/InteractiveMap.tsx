@@ -1,15 +1,10 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { MapPin, Navigation, X, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-declare global {
-  interface Window {
-    google: any;
-    initMap: () => void;
-  }
-}
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 interface Location {
   id: string;
@@ -21,7 +16,6 @@ interface Location {
   mapLink: string;
 }
 
-// Faifa locations with coordinates extracted from the place names
 const locations: Location[] = [
   // Hotels
   {
@@ -191,26 +185,58 @@ const locations: Location[] = [
 ];
 
 const typeColors = {
-  hotel: { bg: "bg-blue-500", text: "text-blue-500", border: "border-blue-500" },
-  park: { bg: "bg-green-500", text: "text-green-500", border: "border-green-500" },
-  cafe: { bg: "bg-amber-500", text: "text-amber-500", border: "border-amber-500" }
+  hotel: { bg: "bg-blue-500", text: "text-blue-500", border: "border-blue-500", hex: "#3b82f6" },
+  park: { bg: "bg-green-500", text: "text-green-500", border: "border-green-500", hex: "#22c55e" },
+  cafe: { bg: "bg-amber-500", text: "text-amber-500", border: "border-amber-500", hex: "#f59e0b" }
 };
 
-const typeLabels = {
-  hotel: { ar: "فندق", en: "Hotel" },
-  park: { ar: "منتزه", en: "Park" },
-  cafe: { ar: "مقهى", en: "Cafe" }
+const createCustomIcon = (type: "hotel" | "park" | "cafe") => {
+  const color = typeColors[type].hex;
+  return L.divIcon({
+    className: "custom-marker",
+    html: `
+      <div style="
+        background-color: ${color};
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+      </div>
+    `,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+};
+
+// Component to handle map bounds/filter changes
+const MapController = ({ filteredLocations }: { filteredLocations: Location[] }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (filteredLocations.length > 0) {
+      const bounds = L.latLngBounds(filteredLocations.map(loc => [loc.lat, loc.lng]));
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+    }
+  }, [filteredLocations, map]);
+  
+  return null;
 };
 
 const InteractiveMap = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [filter, setFilter] = useState<"all" | "hotel" | "park" | "cafe">("all");
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const mapRef = useRef<HTMLDivElement>(null);
-  const googleMapRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
 
-  const center = { lat: 17.2580, lng: 43.1130 };
+  const center: [number, number] = [17.2580, 43.1130];
 
   const filteredLocations = filter === "all" 
     ? locations 
@@ -223,111 +249,6 @@ const InteractiveMap = () => {
   const handleOpenInMaps = useCallback((mapLink: string) => {
     window.open(mapLink, "_blank", "noopener,noreferrer");
   }, []);
-
-  const markerColors = {
-    hotel: "#3b82f6",
-    park: "#22c55e", 
-    cafe: "#f59e0b"
-  };
-
-  // Load Google Maps script
-  useEffect(() => {
-    if (window.google?.maps) {
-      setMapLoaded(true);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&libraries=marker&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-
-    window.initMap = () => {
-      setMapLoaded(true);
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      delete window.initMap;
-    };
-  }, []);
-
-  // Initialize map once loaded
-  useEffect(() => {
-    if (!mapLoaded || !mapRef.current || googleMapRef.current) return;
-
-    googleMapRef.current = new window.google.maps.Map(mapRef.current, {
-      center,
-      zoom: 14,
-      mapId: "faifa-map",
-      disableDefaultUI: false,
-      zoomControl: true,
-      mapTypeControl: true,
-      streetViewControl: false,
-      fullscreenControl: true,
-    });
-  }, [mapLoaded]);
-
-  // Update markers when filter changes
-  useEffect(() => {
-    if (!mapLoaded || !googleMapRef.current) return;
-
-    // Clear existing markers
-    markersRef.current.forEach((marker) => {
-      marker.map = null;
-    });
-    markersRef.current = [];
-
-    // Create new markers
-    filteredLocations.forEach((location) => {
-      const pinElement = document.createElement("div");
-      pinElement.innerHTML = `
-        <div style="
-          background-color: ${markerColors[location.type]};
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 3px solid white;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: transform 0.2s;
-        ">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-        </div>
-      `;
-
-      pinElement.addEventListener("mouseenter", () => {
-        pinElement.firstElementChild?.setAttribute("style", 
-          pinElement.firstElementChild.getAttribute("style")?.replace("transform 0.2s", "transform 0.2s; transform: scale(1.2)") || ""
-        );
-      });
-      pinElement.addEventListener("mouseleave", () => {
-        pinElement.firstElementChild?.setAttribute("style",
-          pinElement.firstElementChild.getAttribute("style")?.replace("transform: scale(1.2)", "") || ""
-        );
-      });
-
-      const marker = new window.google.maps.marker.AdvancedMarkerElement({
-        map: googleMapRef.current!,
-        position: { lat: location.lat, lng: location.lng },
-        title: location.name,
-        content: pinElement,
-      });
-
-      marker.addListener("click", () => {
-        handleMarkerClick(location);
-      });
-
-      markersRef.current.push(marker);
-    });
-  }, [mapLoaded, filteredLocations, handleMarkerClick]);
 
   return (
     <section id="map" className="py-12">
@@ -379,15 +300,36 @@ const InteractiveMap = () => {
       <Card className="overflow-hidden shadow-lg border-2 border-primary/20">
         <CardContent className="p-0 relative">
           <div className="relative w-full h-[400px] md:h-[500px]">
-            {!mapLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                  <p className="text-sm text-muted-foreground">جاري تحميل الخريطة...</p>
-                </div>
-              </div>
-            )}
-            <div ref={mapRef} className="w-full h-full" />
+            <MapContainer
+              center={center}
+              zoom={14}
+              className="w-full h-full z-0"
+              scrollWheelZoom={true}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <MapController filteredLocations={filteredLocations} />
+              {filteredLocations.map((location) => (
+                <Marker
+                  key={location.id}
+                  position={[location.lat, location.lng]}
+                  icon={createCustomIcon(location.type)}
+                  eventHandlers={{
+                    click: () => handleMarkerClick(location)
+                  }}
+                >
+                  <Popup>
+                    <div className="text-center p-1">
+                      <strong>{location.name}</strong>
+                      <br />
+                      <span className="text-sm text-gray-500">{location.nameEn}</span>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
           </div>
         </CardContent>
       </Card>
@@ -425,7 +367,6 @@ const InteractiveMap = () => {
           </div>
         </div>
       )}
-
     </section>
   );
 };
