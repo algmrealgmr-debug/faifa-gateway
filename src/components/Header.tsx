@@ -1,12 +1,7 @@
-import { useState } from "react";
 import heroImage from "@/assets/faifa-hero-new.jpg";
 import WeatherWidget from "./WeatherWidget";
-import ButterflyAnimation from "./ButterflyAnimation";
-import CatMascot from "./CatMascot";
 
 const Header = () => {
-  const [butterflyPosition, setButterflyPosition] = useState<{ x: number; y: number } | undefined>();
-
   return (
     <header 
       className="main-hero relative overflow-hidden min-h-[75vh] md:min-h-screen"
@@ -14,12 +9,6 @@ const Header = () => {
         '--hero-bg-image': `url(${heroImage})`,
       } as React.CSSProperties & { '--hero-bg-image': string }}
     >
-      {/* Butterfly Animation */}
-      <ButterflyAnimation onPositionChange={setButterflyPosition} />
-      
-      {/* Cat Mascot */}
-      <CatMascot targetPosition={butterflyPosition} />
-
       {/* Weather Widget - Top Right */}
       <div className="absolute top-6 left-6 z-20">
         <WeatherWidget />
