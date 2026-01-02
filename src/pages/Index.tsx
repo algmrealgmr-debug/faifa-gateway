@@ -7,6 +7,7 @@ import DeveloperSection from "@/components/DeveloperSection";
 import Footer from "@/components/Footer";
 import VisitorCounter from "@/components/VisitorCounter";
 import InteractiveMap from "@/components/InteractiveMap";
+import BackToTop from "@/components/BackToTop";
 const Index = () => {
   return (
     <div className="min-h-screen" dir="rtl">
@@ -182,6 +183,7 @@ const Index = () => {
       </div>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };
