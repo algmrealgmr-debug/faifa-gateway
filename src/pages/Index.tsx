@@ -20,6 +20,11 @@ const Index = () => {
       <section className="container mx-auto px-6 py-8 text-center">
         <VisitorCounter />
       </section>
+
+      {/* AI Search Section */}
+      <section className="container mx-auto px-6 pb-8">
+        <AIChatWidget />
+      </section>
       
       <main className="container mx-auto px-6 md:px-8 py-16 space-y-20">
         {/* Hotels Section */}
@@ -186,7 +191,6 @@ const Index = () => {
 
       <Footer />
       <BackToTop />
-      <AIChatWidget />
     </div>
   );
 };
