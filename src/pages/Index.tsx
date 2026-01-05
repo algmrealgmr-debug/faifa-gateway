@@ -8,6 +8,8 @@ import Footer from "@/components/Footer";
 import VisitorCounter from "@/components/VisitorCounter";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
+import AIChatWidget from "@/components/AIChatWidget";
+
 const Index = () => {
   return (
     <div className="min-h-screen" dir="rtl">
@@ -184,6 +186,7 @@ const Index = () => {
 
       <Footer />
       <BackToTop />
+      <AIChatWidget />
     </div>
   );
 };
