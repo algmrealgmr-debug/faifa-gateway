@@ -15,6 +15,7 @@ const AIChatWidget = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const isRequestInFlight = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -29,8 +30,10 @@ const AIChatWidget = () => {
   }, [messages, isExpanded]);
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    // Prevent multiple requests with both state and ref check
+    if (!input.trim() || isLoading || isRequestInFlight.current) return;
 
+    isRequestInFlight.current = true;
     const userMessage: Message = { role: 'user', content: input.trim() };
     
     // Expand if not already
@@ -75,6 +78,7 @@ const AIChatWidget = () => {
       }]);
     } finally {
       setIsLoading(false);
+      isRequestInFlight.current = false;
     }
   };
 
