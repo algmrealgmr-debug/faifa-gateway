@@ -11,7 +11,7 @@ interface Message {
 const AIChatWidget = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'حياك الله في بوابة فيفاء، أنا فيفاوي.. كيف أقدر أساعدك اليوم؟' }
+    { role: 'assistant', content: 'أنا فيفاوي مساعدك الإلكتروني.. كيف أقدر أخدمك؟' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -42,23 +42,36 @@ const AIChatWidget = () => {
     setInput('');
     setIsLoading(true);
 
+    const busyMessage = 'فيفاوي مشغول قليلاً الآن، فضلاً انتظر دقيقة وأعد السؤال.';
+
     try {
       const { data, error } = await supabase.functions.invoke('chat', {
         body: { messages: [...messages, userMessage] }
       });
 
-      if (error) throw error;
+      // If the backend surfaces a rate-limit or connection issue, show the required message.
+      if (error) {
+        console.error('Chat invoke error:', error);
+        throw error;
+      }
 
-      const assistantMessage: Message = { 
-        role: 'assistant', 
-        content: data.message || 'عذراً، حدث خطأ ما.' 
+      if (data?.error === 'RATE_LIMIT') {
+        setMessages(prev => [...prev, { role: 'assistant', content: busyMessage }]);
+        return;
+      }
+
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data?.message || 'عذراً، حدث خطأ ما.'
       };
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'عذراً، حدث خطأ في الاتصال. حاول مرة أخرى.' 
+
+      // Required UX: show this exact message for 429 rate limit OR any connection error.
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: busyMessage,
       }]);
     } finally {
       setIsLoading(false);
