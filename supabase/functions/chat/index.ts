@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 const FAIFA_KNOWLEDGE = `
@@ -107,80 +108,189 @@ const FAIFA_KNOWLEDGE = `
 - شجع الزوار على استكشاف فيفاء
 `;
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const requestId = crypto.randomUUID();
+
   try {
     const { messages } = await req.json();
-    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 
-    console.log('GEMINI_API_KEY present:', Boolean(GEMINI_API_KEY));
-    
+    const apiKeyRaw = Deno.env.get("GEMINI_API_KEY");
+    const GEMINI_API_KEY = apiKeyRaw?.trim();
+
+    console.log("[chat] requestId:", requestId);
+    console.log("[chat] GEMINI_API_KEY present:", Boolean(GEMINI_API_KEY));
+
     if (!GEMINI_API_KEY) {
-      throw new Error('GEMINI_API_KEY is not configured');
+      throw new Error("GEMINI_API_KEY is not configured (undefined/empty)");
     }
 
-    console.log('Processing chat request with', messages.length, 'messages');
+    if (!Array.isArray(messages)) {
+      throw new Error("Invalid request body: messages must be an array");
+    }
 
-    // Convert messages to Gemini format
-    const geminiMessages = messages.map((msg: { role: string; content: string }) => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }]
-    }));
+    console.log("[chat] Processing chat request with", messages.length, "messages");
 
-    const modelName = 'gemini-2.0-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
-
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: FAIFA_KNOWLEDGE }]
-          },
-          contents: geminiMessages,
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1024,
-          }
-        }),
-      }
+    const geminiMessages = messages.map(
+      (msg: { role: string; content: string }) => ({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: String(msg.content ?? "") }],
+      }),
     );
 
-    if (!response.ok) {
-      const status = response.status;
-      const errorText = await response.text();
+    const modelName = "gemini-1.5-flash";
+    // Required URL format:
+    // https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(
+      GEMINI_API_KEY,
+    )}`;
 
-      console.error('Gemini API error:', status, errorText);
+    const body = {
+      system_instruction: {
+        parts: [{ text: FAIFA_KNOWLEDGE }],
+      },
+      contents: geminiMessages,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 1024,
+      },
+    };
 
-      // Surface rate limiting explicitly so the client can show a friendly message.
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: 'RATE_LIMIT' }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    const maxAttempts = 5;
+    const baseDelayMs = 900;
+
+    let lastStatus: number | undefined;
+    let lastBodyText: string | undefined;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      console.log(
+        `[chat] requestId=${requestId} Gemini call attempt ${attempt}/${maxAttempts}`,
+      );
+
+      let response: Response;
+      try {
+        response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      } catch (err) {
+        console.error(
+          `[chat] requestId=${requestId} Network/connection error calling Gemini:`,
+          err,
+        );
+        // Connection errors are not retryable by status; surface a clear error.
+        return new Response(
+          JSON.stringify({
+            error: "GEMINI_CONNECTION_ERROR",
+            message: "Failed to reach Gemini API",
+            requestId,
+            details: String(err?.message ?? err),
+          }),
+          {
+            status: 502,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`[chat] requestId=${requestId} Gemini response received`);
+
+        const generatedText =
+          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          "عذراً، لم أتمكن من معالجة طلبك.";
+
+        return new Response(JSON.stringify({ message: generatedText }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      throw new Error(`Gemini API error: ${status}`);
+      lastStatus = response.status;
+      lastBodyText = await response.text();
+
+      // Always log full response body for debugging/billing/quota reasons.
+      console.error(
+        `[chat] requestId=${requestId} Gemini API error status=${lastStatus} body=`,
+        lastBodyText,
+      );
+
+      if (lastStatus === 429) {
+        if (attempt < maxAttempts) {
+          const jitter = Math.floor(Math.random() * 250);
+          const backoff = baseDelayMs * Math.pow(2, attempt - 1) + jitter;
+          console.warn(
+            `[chat] requestId=${requestId} Rate limited (429). Backing off for ${backoff}ms before retry...`,
+          );
+          await sleep(backoff);
+          continue;
+        }
+
+        // Retries exhausted: return explicit rate-limit error with details.
+        return new Response(
+          JSON.stringify({
+            error: "RATE_LIMIT",
+            message: "Gemini rate limit after retries",
+            requestId,
+            attempts: maxAttempts,
+            status: lastStatus,
+            responseBody: lastBodyText,
+          }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
+      }
+
+      // Non-429 errors: don't retry by default; surface clear error.
+      return new Response(
+        JSON.stringify({
+          error: "GEMINI_API_ERROR",
+          message: "Gemini API request failed",
+          requestId,
+          status: lastStatus,
+          responseBody: lastBodyText,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    const data = await response.json();
-    console.log('Gemini response received');
-    
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'عذراً، لم أتمكن من معالجة طلبك.';
-
-    return new Response(JSON.stringify({ message: generatedText }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // Should never reach here.
+    return new Response(
+      JSON.stringify({
+        error: "UNEXPECTED_STATE",
+        message: "Unexpected chat function state",
+        requestId,
+        status: lastStatus,
+        responseBody: lastBodyText,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
-    console.error('Error in chat function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error(`[chat] requestId=${requestId} Error in chat function:`, error);
+    return new Response(
+      JSON.stringify({
+        error: "CHAT_FUNCTION_ERROR",
+        message: error?.message ?? "Unknown error",
+        requestId,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 });
