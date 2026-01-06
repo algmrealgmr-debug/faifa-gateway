@@ -15,6 +15,7 @@ const AIChatWidget = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
   const isRequestInFlight = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,36 +48,62 @@ const AIChatWidget = () => {
 
     const busyMessage = 'فيفاوي مشغول قليلاً الآن، فضلاً انتظر دقيقة وأعد السؤال.';
 
+    const maxAttempts = 3;
+    const baseDelayMs = 900;
+
     try {
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: { messages: [...messages, userMessage] }
-      });
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const { data, error } = await supabase.functions.invoke('chat', {
+          body: { messages: [...messages, userMessage] },
+        });
 
-      // If the backend surfaces a rate-limit or connection issue, show the required message.
-      if (error) {
-        console.error('Chat invoke error:', error);
-        throw error;
-      }
+        // If the backend surfaces a rate-limit or connection issue, show the required message.
+        if (error) {
+          console.error('Chat invoke error:', error);
+          throw error;
+        }
 
-      if (data?.error === 'RATE_LIMIT') {
-        setMessages(prev => [...prev, { role: 'assistant', content: busyMessage }]);
+        if (data?.error === 'RATE_LIMIT') {
+          if (attempt < maxAttempts) {
+            setIsRetrying(true);
+            const jitter = Math.floor(Math.random() * 250);
+            const delay = baseDelayMs * Math.pow(2, attempt - 1) + jitter;
+            console.warn(`Rate limited; retrying in ${delay}ms (attempt ${attempt}/${maxAttempts})`);
+            await new Promise((r) => setTimeout(r, delay));
+            continue;
+          }
+
+          // Retries exhausted in UI: show the required final busy message.
+          setIsRetrying(false);
+          setMessages((prev) => [...prev, { role: 'assistant', content: busyMessage }]);
+          return;
+        }
+
+        setIsRetrying(false);
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content: data?.message || 'عذراً، حدث خطأ ما.',
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
         return;
       }
 
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: data?.message || 'عذراً، حدث خطأ ما.'
-      };
-      setMessages(prev => [...prev, assistantMessage]);
+      // Should never happen, but keep UX consistent.
+      setIsRetrying(false);
+      setMessages((prev) => [...prev, { role: 'assistant', content: busyMessage }]);
     } catch (error: any) {
       console.error('Error sending message:', error);
 
       // Required UX: show this exact message for 429 rate limit OR any connection error.
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: busyMessage,
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: busyMessage,
+        },
+      ]);
     } finally {
+      setIsRetrying(false);
       setIsLoading(false);
       isRequestInFlight.current = false;
     }
@@ -184,6 +211,13 @@ const AIChatWidget = () => {
                   </div>
                 </div>
               ))}
+
+              {isRetrying && (
+                <div className="text-xs text-muted-foreground text-center">
+                  Service is busy, retrying...
+                </div>
+              )}
+
               {isLoading && (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
