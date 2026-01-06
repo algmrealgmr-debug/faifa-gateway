@@ -115,6 +115,8 @@ serve(async (req) => {
   try {
     const { messages } = await req.json();
     const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+
+    console.log('GEMINI_API_KEY present:', Boolean(GEMINI_API_KEY));
     
     if (!GEMINI_API_KEY) {
       throw new Error('GEMINI_API_KEY is not configured');
@@ -128,9 +130,10 @@ serve(async (req) => {
       parts: [{ text: msg.content }]
     }));
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
+    const modelName = 'gemini-1.5-flash';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
+
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,9 +152,20 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
+      const status = response.status;
       const errorText = await response.text();
-      console.error('Gemini API error:', response.status, errorText);
-      throw new Error(`Gemini API error: ${response.status}`);
+
+      console.error('Gemini API error:', status, errorText);
+
+      // Surface rate limiting explicitly so the client can show a friendly message.
+      if (status === 429) {
+        return new Response(JSON.stringify({ error: 'RATE_LIMIT' }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      throw new Error(`Gemini API error: ${status}`);
     }
 
     const data = await response.json();
