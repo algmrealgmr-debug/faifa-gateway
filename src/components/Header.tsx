@@ -1,20 +1,8 @@
-import { useState } from "react";
 import heroImage from "@/assets/faifa-hero-new.jpg";
 import WeatherWidget from "./WeatherWidget";
 import ButterflyAnimation from "./ButterflyAnimation";
-import CatMascot from "./CatMascot";
 
 const Header = () => {
-  const [butterflyPos, setButterflyPos] = useState({ x: 0, y: 0 });
-  const [isTracking, setIsTracking] = useState(true);
-
-  const handleButterflyPosition = (x: number, y: number) => {
-    setButterflyPos({ x, y });
-  };
-
-  // Stop tracking after butterfly fades
-  setTimeout(() => setIsTracking(false), 4000);
-
   return (
     <header 
       className="main-hero relative overflow-hidden min-h-[75vh] md:min-h-screen"
@@ -23,14 +11,7 @@ const Header = () => {
       } as React.CSSProperties & { '--hero-bg-image': string }}
     >
       {/* Butterfly Animation */}
-      <ButterflyAnimation onPositionChange={handleButterflyPosition} />
-      
-      {/* Cat Mascot */}
-      <CatMascot 
-        butterflyX={butterflyPos.x} 
-        butterflyY={butterflyPos.y} 
-        isTracking={isTracking} 
-      />
+      <ButterflyAnimation />
 
       {/* Weather Widget - Top Right */}
       <div className="absolute top-6 left-6 z-20">
