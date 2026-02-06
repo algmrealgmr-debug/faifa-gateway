@@ -1,0 +1,245 @@
+import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, LucideIcon } from "lucide-react";
+
+export interface Place {
+  id: string;
+  title: string;
+  titleEn?: string;
+  description?: string;
+  englishDescription?: string;
+  category: "hotel" | "park" | "cafe";
+  mapLink: string;
+  icon: LucideIcon;
+  image: string;
+  instagramLink?: string;
+}
+
+// Placeholder images from Unsplash for the travel directory
+const images = {
+  hotel1: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80",
+  hotel2: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80",
+  hotel3: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80",
+  hotel4: "https://images.unsplash.com/photo-1586611292717-f828b167408c?w=800&q=80",
+  park1: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80",
+  park2: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+  park3: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+  park4: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80",
+  park5: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&q=80",
+  park6: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80",
+  park7: "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&q=80",
+  park8: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80",
+  cafe1: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80",
+  cafe2: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80",
+  cafe3: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80",
+  cafe4: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800&q=80",
+  cafe5: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80",
+  cafe6: "https://images.unsplash.com/photo-1559496417-e7f25cb247cd?w=800&q=80",
+};
+
+export const places: Place[] = [
+  // Hotels
+  {
+    id: "jarat-al-gheim-hotel",
+    title: "فندق جارة الغيم",
+    titleEn: "Jarat Al Gheim Hotel",
+    description: "يتواجد مطل وكافيه في أعلى الفندق.",
+    englishDescription: "Rooftop café with a panoramic view.",
+    category: "hotel",
+    mapLink: "https://maps.app.goo.gl/aV8KzXz4JTAXTBPh6?g_st=ipc",
+    icon: Bed,
+    image: images.hotel1,
+  },
+  {
+    id: "faifa-luxury-hotel",
+    title: "فندق فيفاء الفاخر",
+    titleEn: "Faifa Luxury Hotel",
+    description: "يتواجد مطل وكافيه في أعلى الفندق.",
+    englishDescription: "Rooftop café with a scenic view.",
+    category: "hotel",
+    mapLink: "https://maps.app.goo.gl/WQnUcteQvjDkLqUb7?g_st=ipc",
+    icon: Bed,
+    image: images.hotel2,
+  },
+  {
+    id: "iwan-hotel",
+    title: "فندق إيوان",
+    titleEn: "Iwan Hotel",
+    description: "يتواجد مطل وكافيه في أعلى الفندق.",
+    englishDescription: "Rooftop café with a scenic view.",
+    category: "hotel",
+    mapLink: "https://maps.app.goo.gl/TvqSciP5UrBrPBNS8?g_st=ipc",
+    icon: Bed,
+    image: images.hotel3,
+  },
+  {
+    id: "beit-sahlan",
+    title: "بيت سهلان",
+    titleEn: "Beit Sahlan",
+    description: "بيت عتيق أعيد بريح عصرية وهوية فيفية أصيلة.",
+    englishDescription: "An old house renovated with a modern touch and authentic Faifa identity.",
+    category: "hotel",
+    mapLink: "https://maps.app.goo.gl/ZgDkhJv2dHvs69oQ8?g_st=ipc",
+    icon: Home,
+    image: images.hotel4,
+    instagramLink: "https://www.instagram.com/bieatsahlan",
+  },
+  // Parks
+  {
+    id: "al-khatm-park",
+    title: "منتزه وإطلالة الخطم",
+    titleEn: "Al-Khatm Park & Viewpoint",
+    description: "منتزه متكامل للعائلة.",
+    englishDescription: "Family-friendly park with great views.",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/Cdfrj4YBB88aH2yf9?g_st=ipc",
+    icon: Mountain,
+    image: images.park1,
+  },
+  {
+    id: "souq-alnafiah",
+    title: "سوق النفيعة الشعبي",
+    titleEn: "Al-Nafi'ah Traditional Market",
+    description: "تجربة تسوق بروح فيفاء، حيث تلتقي المحلات التراثية بمنتجات الجبال الأصيلة.",
+    englishDescription: "Traditional shopping experience with authentic mountain products.",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/TzAGVeryF34ooRbh7?g_st=ipc",
+    icon: Trees,
+    image: images.park2,
+  },
+  {
+    id: "al-bakhira-resort",
+    title: "منتجع الباخرة",
+    titleEn: "Al-Bakhira Resort",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/4No4mWgXs3vVz7CD7?g_st=ipc",
+    icon: Tent,
+    image: images.park3,
+  },
+  {
+    id: "khawlani-trail",
+    title: "ممشى البن الخولاني",
+    titleEn: "Khawlani Coffee Trail",
+    description: "ممشى سياحي مرتبط بتراث زراعة البن الخولاني.",
+    englishDescription: "Coffee heritage walking trail.",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/EkhwSPbHFqKNcyvs7?g_st=ipc",
+    icon: UtensilsCrossed,
+    image: images.park4,
+  },
+  {
+    id: "al-dafrah-viewpoint",
+    title: "مطل الدفرة",
+    titleEn: "Al-Dafrah Viewpoint",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/ex9dGXbr9Vu8gCnc8?g_st=ipc",
+    icon: Binoculars,
+    image: images.park5,
+  },
+  {
+    id: "qarza-viewpoint",
+    title: "مطل قرضة",
+    titleEn: "Qarza Viewpoint",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/yibESTRS7VWEYEKz6?g_st=ipc",
+    icon: Binoculars,
+    image: images.park6,
+  },
+  {
+    id: "hanging-mosque",
+    title: "المصلى المعلق",
+    titleEn: "The Hanging Mosque",
+    description: "مصلى للأعياد والمناسبات مشهور جداً.",
+    englishDescription: "Famous hanging mosque for holidays and occasions.",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/kxuvxMzVTKzSKJ7Y9?g_st=ipc",
+    icon: Church,
+    image: images.park7,
+  },
+  {
+    id: "al-absiyah-viewpoint",
+    title: "مطل العبسية",
+    titleEn: "Al-Absiyah Viewpoint",
+    description: "أعلى نقطة في الجبل يمكن لشخص الجلوس في أي مكان.",
+    englishDescription: "The highest point in the mountain where one can sit anywhere.",
+    category: "park",
+    mapLink: "https://maps.app.goo.gl/7oTLeZDz1Pbap2Tk8?g_st=ipc",
+    icon: Binoculars,
+    image: images.park8,
+  },
+  // Cafes
+  {
+    id: "jarat-alqamar-cafe",
+    title: "مقهى جارة القمر",
+    titleEn: "Jarat Al-Qamar Café",
+    description: "إطلالة مميزة على جبال فيفاء.",
+    englishDescription: "Unique view of Faifa mountains.",
+    category: "cafe",
+    mapLink: "https://maps.app.goo.gl/Cjh7oPM5aX2QsdUR6?g_st=ipc",
+    icon: Coffee,
+    image: images.cafe1,
+  },
+  {
+    id: "jarat-alghaim-cafe",
+    title: "مقهى جارة الغيم",
+    titleEn: "Jarat Al-Ghaim Café",
+    description: "مطل على الجبال من الأعلى.",
+    englishDescription: "Mountaintop view from above.",
+    category: "cafe",
+    mapLink: "https://maps.app.goo.gl/FekVqv8zkzj5Fuk97?g_st=ipc",
+    icon: Coffee,
+    image: images.cafe2,
+  },
+  {
+    id: "iwan-cafe",
+    title: "مقهى ومطل إيوان",
+    titleEn: "Iwan Café & Viewpoint",
+    description: "كافيه مع إطلالة جميلة.",
+    englishDescription: "Café with a beautiful scenic view.",
+    category: "cafe",
+    mapLink: "https://maps.app.goo.gl/yWadi31KNE7ykdN86?g_st=ipc",
+    icon: Coffee,
+    image: images.cafe3,
+  },
+  {
+    id: "sukoon-cafe",
+    title: "مقهى سكون",
+    titleEn: "Sukoon Café",
+    description: "إطلالة جميلة ورائعة على الجبال.",
+    englishDescription: "Beautiful and amazing view of the mountains.",
+    category: "cafe",
+    mapLink: "https://maps.app.goo.gl/RA3bdJW8rLZzjTFi9?g_st=ipc",
+    icon: Coffee,
+    image: images.cafe4,
+  },
+  {
+    id: "taliqa-cafe",
+    title: "كافية تالقة",
+    titleEn: "Taliqa Café",
+    description: "مقهى جديد وجميل واسم مقتبس من شجرة مُعمرة في الجبل.",
+    englishDescription: "New and beautiful café named after an ancient tree in the mountain.",
+    category: "cafe",
+    mapLink: "https://maps.app.goo.gl/9MfLxBT1AghGifAR8?g_st=ipc",
+    icon: Coffee,
+    image: images.cafe5,
+  },
+  {
+    id: "lub-alqahwa-cafe",
+    title: "لب القهوة",
+    titleEn: "Lub Al-Qahwa Café",
+    category: "cafe",
+    mapLink: "https://maps.app.goo.gl/EJ1xKPEnpdgGF9Z3A?g_st=ipc",
+    icon: Coffee,
+    image: images.cafe6,
+  },
+];
+
+export const categoryLabels = {
+  hotel: { ar: "فندق", en: "Hotel" },
+  park: { ar: "منتزه", en: "Park" },
+  cafe: { ar: "مقهى", en: "Café" },
+};
+
+export const categoryColors = {
+  hotel: "bg-blue-500",
+  park: "bg-green-500",
+  cafe: "bg-amber-500",
+};
