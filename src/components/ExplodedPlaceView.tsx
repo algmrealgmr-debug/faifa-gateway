@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { X, MapPin, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -61,6 +61,36 @@ const layers: LayerData[] = [
   },
 ];
 
+// Container variants for orchestrating staggered children
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.25,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+// Layer card variants - pure automatic animation
+const layerVariants: Variants = {
+  hidden: { 
+    opacity: 0, 
+    scale: 0.8,
+    rotateX: 10,
+  },
+  visible: { 
+    opacity: 1,
+    scale: 1,
+    rotateX: 0,
+    transition: {
+      duration: 1.2,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  },
+};
+
 const ExplodedPlaceView = ({
   isOpen,
   onClose,
@@ -70,8 +100,6 @@ const ExplodedPlaceView = ({
   mapLink,
   icon,
 }: ExplodedPlaceViewProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -93,7 +121,6 @@ const ExplodedPlaceView = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          ref={containerRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -145,56 +172,57 @@ const ExplodedPlaceView = ({
               )}
             </motion.div>
 
-            {/* Exploded layers container */}
-            <div 
+            {/* Exploded layers container - NO DRAG, pure auto animation */}
+            <motion.div 
               className="relative w-full max-w-5xl mx-auto"
               style={{ perspective: "1200px" }}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
             >
               <div className="relative h-[500px] md:h-[600px]">
                 {layers.map((layer, index) => (
                   <motion.div
                     key={layer.id}
-                    initial={{ 
-                      opacity: 0, 
-                      x: 0, 
-                      y: 0, 
-                      scale: 0.8,
-                      rotateY: 0,
-                      rotateX: 10,
+                    variants={layerVariants}
+                    style={{
+                      transformStyle: "preserve-3d",
                     }}
-                    animate={{ 
-                      opacity: 1,
+                    animate={{
                       x: layer.xOffset,
                       y: layer.yOffset,
-                      scale: 1,
                       rotateY: layer.rotation,
-                      rotateX: 0,
                     }}
                     transition={{ 
                       delay: 0.4 + index * 0.25,
                       duration: 1.2,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
-                    style={{
-                      transformStyle: "preserve-3d",
-                      transform: `translateZ(${layer.zOffset}px)`,
-                    }}
-                    className="absolute inset-0 flex items-center justify-center"
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
                   >
-                    {/* Layer card */}
+                    {/* Layer card - NO DRAG */}
                     <motion.div 
-                      className="relative w-64 md:w-80 h-48 md:h-56 rounded-2xl overflow-hidden shadow-2xl"
+                      className="relative w-64 md:w-80 h-48 md:h-56 rounded-2xl overflow-hidden shadow-2xl pointer-events-none"
+                      drag={false}
                       style={{
                         background: `linear-gradient(135deg, ${layer.color}, hsl(220 20% 15%))`,
-                        boxShadow: `0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)`,
+                        transform: `translateZ(${layer.zOffset}px)`,
                       }}
-                      initial={{ boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)" }}
+                      initial={{ 
+                        boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+                        scale: 0.8,
+                      }}
                       animate={{ 
-                        boxShadow: `0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)` 
+                        boxShadow: `0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)`,
+                        scale: 1,
                       }}
-                      transition={{ delay: 0.6 + index * 0.25, duration: 0.8 }}
+                      transition={{ 
+                        delay: 0.4 + index * 0.25, 
+                        duration: 1.2,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
                     >
-                      {/* Layer content */}
+                      {/* Layer content - auto fade in */}
                       <motion.div 
                         className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center"
                         initial={{ opacity: 0, y: 20 }}
@@ -213,10 +241,10 @@ const ExplodedPlaceView = ({
                       </motion.div>
 
                       {/* Gradient overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
                     </motion.div>
 
-                    {/* Connector line and label */}
+                    {/* Connector line and label - auto animated */}
                     <ConnectorLine 
                       layer={layer} 
                       index={index} 
@@ -225,7 +253,7 @@ const ExplodedPlaceView = ({
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Bottom info section */}
             <motion.div
