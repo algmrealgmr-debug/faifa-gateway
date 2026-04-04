@@ -33,10 +33,10 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="text-center space-y-8">
           {/* Main Title */}
-          <div className="max-w-2xl mx-auto">
-            <p className="text-base md:text-lg leading-relaxed text-primary-foreground/90 font-medium" style={{ fontFamily: "'Noto Naskh Arabic', 'Amiri', serif" }}>
-              الجبل ما ينسى اللي زاره.. استودعناك الله، وإن ما ساقتك الأيام لنا مرة ثانية، يا جعل لقانا في جنات النعيم
-            </p>
+          <div className="max-w-2xl mx-auto space-y-2" style={{ fontFamily: "'Amiri', serif" }}>
+            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">الجبل ما ينسى اللي زاره.. استودعناك الله</p>
+            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">وإن ما ساقتك الأيام لنا مرة ثانية</p>
+            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">يا جعل لقانا في جنات النعيم</p>
           </div>
           
           {/* Social Links */}
