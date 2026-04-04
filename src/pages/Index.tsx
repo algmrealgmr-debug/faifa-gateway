@@ -16,6 +16,15 @@ const Index = () => {
       <Header />
       <Navigation />
       
+      {/* Instruction Text */}
+      <div className="bg-background text-center py-5">
+        <p 
+          className="text-sm text-muted-foreground font-light"
+          style={{ fontFamily: "'Tajawal', sans-serif", fontWeight: 300 }}
+        >
+          انزل تحت واكتشف الأماكن
+        </p>
+      </div>
       {/* Visitor Counter Section */}
       <section className="container mx-auto px-6 py-8 text-center">
         <VisitorCounter />
