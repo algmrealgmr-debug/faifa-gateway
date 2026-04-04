@@ -20,19 +20,13 @@ const Header = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 py-16 md:py-20 text-center min-h-[75vh] md:min-h-screen flex items-center">
-        <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-            اكتشف فيفاء
+        <div className="max-w-4xl mx-auto animate-fade-in">
+          <h1
+            className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg leading-relaxed"
+            style={{ fontFamily: "'Amiri', serif", lineHeight: 1.8 }}
+          >
+            ترا الجبل هذا أحنّ من إنه يخليك ترجع مثل ما جيت
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-            استمتع بالجمال الساحر لجوهرة المملكة العربية السعودية الجبلية المخفية، حيث تلتقي التقاليد العريقة بالمناظر الطبيعية الخلابة
-          </p>
-          <div className="mt-8 animate-float">
-          <div className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 text-white">
-              <span className="text-sm font-medium">ابدأ الرحلة</span>
-              <span className="text-accent">🏔️</span>
-            </div>
-          </div>
         </div>
       </div>
     </header>
