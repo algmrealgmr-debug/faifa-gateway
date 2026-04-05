@@ -1,0 +1,53 @@
+import { useState, useEffect } from "react";
+import { Sun, Moon } from "lucide-react";
+import { motion } from "framer-motion";
+
+const ThemeToggle = () => {
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark");
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark") {
+      setIsDark(true);
+    }
+  }, []);
+
+  return (
+    <div className="flex items-center justify-center py-6">
+      <button
+        onClick={() => setIsDark(!isDark)}
+        className="relative flex items-center w-16 h-8 rounded-full bg-muted border border-border shadow-soft transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+        aria-label="Toggle dark mode"
+      >
+        <motion.div
+          className="absolute w-6 h-6 rounded-full bg-primary shadow-md flex items-center justify-center"
+          animate={{ x: isDark ? 4 : 32 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        >
+          {isDark ? (
+            <Moon className="w-3.5 h-3.5 text-primary-foreground" />
+          ) : (
+            <Sun className="w-3.5 h-3.5 text-primary-foreground" />
+          )}
+        </motion.div>
+      </button>
+    </div>
+  );
+};
+
+export default ThemeToggle;

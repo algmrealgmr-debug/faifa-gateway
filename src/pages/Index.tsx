@@ -9,10 +9,11 @@ import VisitorCounter from "@/components/VisitorCounter";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
 import AIChatWidget from "@/components/AIChatWidget";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Index = () => {
   return (
-    <div className="min-h-screen" dir="rtl">
+    <div className="min-h-screen bg-background" dir="rtl">
       <Header />
       <Navigation />
       
@@ -24,6 +25,11 @@ const Index = () => {
       {/* AI Search Section */}
       <section className="container mx-auto px-6 pb-8">
         <AIChatWidget />
+      </section>
+
+      {/* Theme Toggle */}
+      <section className="container mx-auto px-6">
+        <ThemeToggle />
       </section>
       
       <main className="container mx-auto px-6 md:px-8 py-16 space-y-20">
