@@ -9,7 +9,6 @@ import Footer from "@/components/Footer";
 import VisitorCounter from "@/components/VisitorCounter";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
-import AIChatWidget from "@/components/AIChatWidget";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const Index = () => {
@@ -38,11 +37,6 @@ const Index = () => {
       {/* Visitor Counter Section */}
       <section className="container mx-auto px-6 py-8 text-center">
         <VisitorCounter />
-      </section>
-
-      {/* AI Search Section */}
-      <section className="container mx-auto px-6 pb-8">
-        <AIChatWidget />
       </section>
 
       {/* Theme Toggle */}
