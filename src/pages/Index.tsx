@@ -39,6 +39,18 @@ const Index = () => {
         <VisitorCounter />
       </section>
 
+      {/* AI Assistant Section */}
+      <section className="container mx-auto px-6 py-8">
+        <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden" style={{ borderRadius: '12px' }}>
+          <iframe
+            src="https://www.chatbase.co/chatbot-iframe/oaTuUgOJzdmeS14kVT-AQ"
+            width="100%"
+            style={{ height: '100%', minHeight: '500px', border: 'none' }}
+            title="فيفاوي - المساعد الذكي"
+          />
+        </div>
+      </section>
+
       {/* Theme Toggle */}
       <section className="container mx-auto px-6">
         <ThemeToggle />
