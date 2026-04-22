@@ -15,6 +15,7 @@ const Navigation = () => {
 
     setIntroActive(true);
     setShowGuideText(true);
+    window.dispatchEvent(new CustomEvent('nav-intro-trigger'));
 
     // Sequential glow: 0 -> 1 -> 2, each ~600ms
     setTimeout(() => setGlowIndex(0), 200);
