@@ -23,13 +23,13 @@ const Header = () => {
         <div className="max-w-4xl mx-auto animate-fade-in">
           <h1
             className="text-lg md:text-3xl lg:text-4xl font-bold text-primary-foreground mb-4"
-            style={{ fontFamily: "'Almarai', sans-serif", lineHeight: 1.8, textShadow: '0 2px 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08)' }}
+            style={{ lineHeight: 1.8, textShadow: '0 2px 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08)' }}
           >
             بوابة الجمال الطبيعي والثراء السياحي
           </h1>
           <p
             className="text-sm md:text-base lg:text-lg text-primary-foreground/80"
-            style={{ fontFamily: "'Tajawal', sans-serif", fontWeight: 300, textShadow: '0 1px 6px rgba(255,255,255,0.12)' }}
+            style={{ fontWeight: 300, textShadow: '0 1px 6px rgba(255,255,255,0.12)' }}
           >
             انزل تحت واكتشف الأماكن
           </p>
