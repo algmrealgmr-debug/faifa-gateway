@@ -149,6 +149,17 @@ export default {
           "0%, 100%": { transform: "rotate(-20deg)" },
           "50%": { transform: "rotate(-10deg)" },
         },
+        "nav-pulse": {
+          "0%": { boxShadow: "0 0 0 0 hsl(var(--primary) / 0.4)" },
+          "50%": { boxShadow: "0 0 12px 4px hsl(var(--primary) / 0.2)" },
+          "100%": { boxShadow: "0 0 0 0 hsl(var(--primary) / 0)" },
+        },
+        "icon-bounce": {
+          "0%": { transform: "scale(1)" },
+          "40%": { transform: "scale(1.3)" },
+          "70%": { transform: "scale(0.95)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -159,6 +170,8 @@ export default {
         "wing-left": "wing-left 0.15s ease-in-out infinite",
         "wing-right": "wing-right 0.15s ease-in-out infinite",
         "tail-wag": "tail-wag 0.8s ease-in-out infinite",
+        "nav-pulse": "nav-pulse 0.5s ease-out",
+        "icon-bounce": "icon-bounce 0.5s ease-out",
       },
     },
   },
