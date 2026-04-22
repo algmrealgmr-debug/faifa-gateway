@@ -1,7 +1,7 @@
 import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CategorySection from "@/components/CategorySection";
 import PlaceCard from "@/components/PlaceCard";
 import DeveloperSection from "@/components/DeveloperSection";
@@ -16,7 +16,7 @@ const Index = () => {
   const [heroBlur, setHeroBlur] = useState(false);
 
   // Listen for intro blur event
-  useState(() => {
+  useEffect(() => {
     const handler = () => {
       const alreadyShown = sessionStorage.getItem('nav-intro-blur');
       if (alreadyShown) return;
@@ -25,8 +25,8 @@ const Index = () => {
       setTimeout(() => setHeroBlur(false), 2500);
     };
     window.addEventListener('nav-intro-trigger', handler);
-    return () => window.removeEventListener('nav-intro-trigger', handler);
-  });
+    return () => window.removeEventListener('nav-intro-trigger', handler as EventListener);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
