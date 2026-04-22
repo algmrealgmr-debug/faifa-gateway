@@ -41,11 +41,17 @@ const Index = () => {
 
       {/* AI Assistant Section */}
       <section className="container mx-auto px-6 py-8">
-        <div className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden" style={{ borderRadius: '12px', maxHeight: '250px' }}>
+        <div
+          className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden"
+          style={{ borderRadius: '12px', height: '120px', maxHeight: '120px', overflow: 'hidden' }}
+        >
           <iframe
             src="https://www.chatbase.co/chatbot-iframe/oaTuUgOJzdmeS14kVT-AQ"
             width="100%"
-            style={{ height: '250px', minHeight: '250px', border: 'none' }}
+            height="120px"
+            style={{ border: 'none', borderRadius: '12px', overflow: 'hidden' }}
+            scrolling="no"
+            frameBorder="0"
             title="فيفاوي - المساعد الذكي"
           />
         </div>
