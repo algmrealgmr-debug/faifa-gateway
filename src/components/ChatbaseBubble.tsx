@@ -3,20 +3,34 @@ import { useState, useEffect } from "react";
 const ChatbaseBubble = () => {
   const [visible, setVisible] = useState(false);
   const [hiding, setHiding] = useState(false);
+  const [cancelled, setCancelled] = useState(false);
 
   useEffect(() => {
-    const showTimer = setTimeout(() => setVisible(true), 2000);
+    let isCancelled = false;
+
+    const showTimer = setTimeout(() => {
+      if (!isCancelled) setVisible(true);
+    }, 6000);
+
     const hideTimer = setTimeout(() => {
-      setHiding(true);
-      setTimeout(() => setVisible(false), 500);
-    }, 8000); // 2s delay + 6s visible
+      if (!isCancelled) {
+        setHiding(true);
+        setTimeout(() => setVisible(false), 500);
+      }
+    }, 12000); // 6s delay + 6s visible
 
     // Hide on chatbase icon click
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('#chatbase-bubble-button, iframe[title*="chatbase"], [id*="chatbase"]')) {
-        setHiding(true);
-        setTimeout(() => setVisible(false), 300);
+        isCancelled = true;
+        setCancelled(true);
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+        if (visible) {
+          setHiding(true);
+          setTimeout(() => setVisible(false), 300);
+        }
       }
     };
     document.addEventListener('click', handleClick, true);
@@ -27,6 +41,8 @@ const ChatbaseBubble = () => {
       document.removeEventListener('click', handleClick, true);
     };
   }, []);
+
+  if (cancelled) return null;
 
   if (!visible) return null;
 
