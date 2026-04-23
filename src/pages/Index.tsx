@@ -1,4 +1,4 @@
-import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram } from "lucide-react";
+import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram, Bot } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import { useState, useEffect } from "react";
@@ -10,6 +10,12 @@ import VisitorCounter from "@/components/VisitorCounter";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
+
+declare global {
+  interface Window {
+    chatbase?: any;
+  }
+}
 
 const Index = () => {
   const [heroBlur, setHeroBlur] = useState(false);
@@ -42,18 +48,16 @@ const Index = () => {
       {/* AI Assistant Section */}
       <section className="container mx-auto px-6 py-8">
         <div
-          className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden"
-          style={{ borderRadius: '12px', height: '120px', maxHeight: '120px', overflow: 'hidden' }}
+          className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-300 flex items-center justify-center gap-3"
+          style={{ borderRadius: '12px', height: '100px', maxHeight: '100px' }}
+          onClick={() => {
+            if (window.chatbase) {
+              window.chatbase("open");
+            }
+          }}
         >
-          <iframe
-            src="https://www.chatbase.co/chatbot-iframe/oaTuUgOJzdmeS14kVT-AQ"
-            width="100%"
-            height="120px"
-            style={{ border: 'none', borderRadius: '12px', overflow: 'hidden' }}
-            scrolling="no"
-            frameBorder="0"
-            title="فيفاوي - المساعد الذكي"
-          />
+          <Bot className="text-primary" size={24} />
+          <span className="text-muted-foreground text-sm font-medium">اسأل الذكاء الاصطناعي...</span>
         </div>
       </section>
 
