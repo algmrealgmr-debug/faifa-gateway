@@ -53,12 +53,12 @@ const ChatbaseBubble = () => {
       }`}
       style={{ fontFamily: "'Thmanyah', sans-serif" }}
     >
-      <div className="relative bg-white text-foreground rounded-2xl px-5 py-4 shadow-lg border border-border/50">
-        <p className="text-sm leading-relaxed text-right" dir="rtl">
+      <div className="relative bg-primary text-primary-foreground rounded-2xl px-5 py-4 shadow-lg">
+        <p className="text-sm leading-relaxed text-right text-primary-foreground" dir="rtl">
           يا هلا بك في فيفاء! ⛰️ أنا مساعدك الذكي، كيف أقدر أخدمك اليوم؟
         </p>
         {/* Caret arrow pointing to bottom-right (toward chat icon) */}
-        <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white border-b border-r border-border/50 transform rotate-45" />
+        <div className="absolute -bottom-2 right-6 w-4 h-4 bg-primary transform rotate-45" />
       </div>
     </div>
   );
