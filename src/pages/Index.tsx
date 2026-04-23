@@ -11,6 +11,12 @@ import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
 
+declare global {
+  interface Window {
+    chatbase?: any;
+  }
+}
+
 const Index = () => {
   const [heroBlur, setHeroBlur] = useState(false);
 
