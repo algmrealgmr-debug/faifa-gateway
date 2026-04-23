@@ -1,4 +1,4 @@
-import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram, Bot } from "lucide-react";
+import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import { useState, useEffect } from "react";
@@ -10,12 +10,6 @@ import VisitorCounter from "@/components/VisitorCounter";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
-
-declare global {
-  interface Window {
-    chatbase?: any;
-  }
-}
 
 const Index = () => {
   const [heroBlur, setHeroBlur] = useState(false);
@@ -43,22 +37,6 @@ const Index = () => {
       {/* Visitor Counter Section */}
       <section className="container mx-auto px-6 py-8 text-center">
         <VisitorCounter />
-      </section>
-
-      {/* AI Assistant Section */}
-      <section className="container mx-auto px-6 py-8">
-        <div
-          className="bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-300 flex items-center justify-center gap-3"
-          style={{ borderRadius: '12px', height: '100px', maxHeight: '100px' }}
-          onClick={() => {
-            if (window.chatbase) {
-              window.chatbase("open");
-            }
-          }}
-        >
-          <Bot className="text-primary" size={24} />
-          <span className="text-muted-foreground text-sm font-medium">اسأل الذكاء الاصطناعي...</span>
-        </div>
       </section>
 
       {/* Theme Toggle */}
