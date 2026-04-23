@@ -10,14 +10,14 @@ const ChatbaseBubble = () => {
 
     const showTimer = setTimeout(() => {
       if (!isCancelled) setVisible(true);
-    }, 6000);
+    }, 10000);
 
     const hideTimer = setTimeout(() => {
       if (!isCancelled) {
         setHiding(true);
         setTimeout(() => setVisible(false), 500);
       }
-    }, 12000); // 6s delay + 6s visible
+    }, 16000); // 10s delay + 6s visible
 
     // Hide on chatbase icon click
     const handleClick = (e: MouseEvent) => {
