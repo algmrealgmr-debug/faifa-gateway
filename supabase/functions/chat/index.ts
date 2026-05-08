@@ -189,9 +189,9 @@ serve(async (req) => {
       ],
     });
 
-    const modelName = "gemini-1.5-flash";
+    const modelName = "gemini-flash-latest";
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -220,11 +220,19 @@ serve(async (req) => {
     const lastGeminiStatus = response.status;
     const lastGeminiError = data?.error?.message || responseText || "Gemini API request failed.";
 
+    console.error("Gemini API error:", {
+      status: lastGeminiStatus,
+      model: modelName,
+      body: data ?? responseText,
+    });
+
     return jsonResponse(
       {
         error: "GEMINI_API_ERROR",
         message: lastGeminiError,
         status: lastGeminiStatus,
+        model: modelName,
+        details: data ?? responseText,
       },
       500,
     );
