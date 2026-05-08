@@ -237,8 +237,13 @@ const InteractiveMap = () => {
       return;
     }
 
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    if (!apiKey) {
+      console.error("Missing VITE_GOOGLE_MAPS_API_KEY environment variable");
+      return;
+    }
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&libraries=marker&callback=initMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=marker&callback=initMap`;
     script.async = true;
     script.defer = true;
 
@@ -282,36 +287,44 @@ const InteractiveMap = () => {
     // Create new markers
     filteredLocations.forEach((location) => {
       const pinElement = document.createElement("div");
-      pinElement.innerHTML = `
-        <div style="
-          background-color: ${markerColors[location.type]};
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 3px solid white;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: transform 0.2s;
-        ">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-        </div>
-      `;
+      const inner = document.createElement("div");
+      Object.assign(inner.style, {
+        backgroundColor: markerColors[location.type],
+        width: "32px",
+        height: "32px",
+        borderRadius: "50%",
+        border: "3px solid white",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        transition: "transform 0.2s",
+      });
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("width", "16");
+      svg.setAttribute("height", "16");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "white");
+      svg.setAttribute("stroke-width", "2");
+      const path = document.createElementNS(svgNS, "path");
+      path.setAttribute("d", "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z");
+      const circle = document.createElementNS(svgNS, "circle");
+      circle.setAttribute("cx", "12");
+      circle.setAttribute("cy", "10");
+      circle.setAttribute("r", "3");
+      svg.appendChild(path);
+      svg.appendChild(circle);
+      inner.appendChild(svg);
+      pinElement.appendChild(inner);
 
       pinElement.addEventListener("mouseenter", () => {
-        pinElement.firstElementChild?.setAttribute("style", 
-          pinElement.firstElementChild.getAttribute("style")?.replace("transform 0.2s", "transform 0.2s; transform: scale(1.2)") || ""
-        );
+        inner.style.transform = "scale(1.2)";
       });
       pinElement.addEventListener("mouseleave", () => {
-        pinElement.firstElementChild?.setAttribute("style",
-          pinElement.firstElementChild.getAttribute("style")?.replace("transform: scale(1.2)", "") || ""
-        );
+        inner.style.transform = "";
       });
 
       const marker = new window.google.maps.marker.AdvancedMarkerElement({
