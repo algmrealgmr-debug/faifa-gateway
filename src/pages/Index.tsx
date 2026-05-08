@@ -1,7 +1,6 @@
 import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
-import { useState, useEffect } from "react";
 import CategorySection from "@/components/CategorySection";
 import PlaceCard from "@/components/PlaceCard";
 import DeveloperSection from "@/components/DeveloperSection";
@@ -11,35 +10,14 @@ import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
 import FloatingChatButton from "@/components/FloatingChatButton";
-import SplashScreen from "@/components/SplashScreen";
 
 const Index = () => {
   const path = typeof window !== "undefined" ? window.location.pathname.replace(/\/+$/, "") || "/" : "/";
   const isRootPath = path === "/";
-  const [showSplash, setShowSplash] = useState(isRootPath);
-  const [heroBlur, setHeroBlur] = useState(false);
-
-  // Listen for intro blur event
-  useEffect(() => {
-    const handler = () => {
-      const alreadyShown = sessionStorage.getItem('nav-intro-blur');
-      if (alreadyShown) return;
-      sessionStorage.setItem('nav-intro-blur', 'true');
-      setHeroBlur(true);
-      setTimeout(() => setHeroBlur(false), 2500);
-    };
-    window.addEventListener('nav-intro-trigger', handler);
-    return () => window.removeEventListener('nav-intro-trigger', handler as EventListener);
-  }, []);
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
-      {isRootPath && showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-      {isRootPath && (
-        <div className={`transition-all duration-500 ${heroBlur ? 'blur-sm brightness-75' : ''}`}>
-          <Header />
-        </div>
-      )}
+      {isRootPath && <Header />}
       <Navigation />
       
       {/* Visitor Counter Section */}
