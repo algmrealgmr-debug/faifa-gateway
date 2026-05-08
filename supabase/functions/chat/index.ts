@@ -189,45 +189,36 @@ serve(async (req) => {
       ],
     });
 
-    const modelNames = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"];
+    const modelName = "gemini-1.5-flash";
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: geminiBody,
+      },
+    );
+
+    const responseText = await response.text();
     let data: any = null;
-    let lastGeminiError = "Gemini API request failed.";
-    let lastGeminiStatus = 500;
-
-    for (const modelName of modelNames) {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: geminiBody,
-        },
-      );
-
-      const responseText = await response.text();
-      try {
-        data = responseText ? JSON.parse(responseText) : null;
-      } catch (_jsonError) {
-        data = null;
-      }
-
-      if (response.ok) {
-        const generatedText =
-          data?.candidates?.[0]?.content?.parts
-            ?.map((part: { text?: string }) => part.text || "")
-            .join("")
-            .trim() || "عذراً، لم أتمكن من معالجة طلبك.";
-
-        return jsonResponse({ message: generatedText, response: generatedText, model: modelName }, 200);
-      }
-
-      lastGeminiStatus = response.status;
-      lastGeminiError = data?.error?.message || responseText || lastGeminiError;
-
-      if (response.status !== 404) {
-        break;
-      }
+    try {
+      data = responseText ? JSON.parse(responseText) : null;
+    } catch (_jsonError) {
+      data = null;
     }
+
+    if (response.ok) {
+      const generatedText =
+        data?.candidates?.[0]?.content?.parts
+          ?.map((part: { text?: string }) => part.text || "")
+          .join("")
+          .trim() || "عذراً، لم أتمكن من معالجة طلبك.";
+
+      return jsonResponse({ message: generatedText, response: generatedText, model: modelName }, 200);
+    }
+
+    const lastGeminiStatus = response.status;
+    const lastGeminiError = data?.error?.message || responseText || "Gemini API request failed.";
 
     return jsonResponse(
       {
