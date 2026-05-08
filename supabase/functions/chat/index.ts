@@ -281,7 +281,7 @@ const FAIFA_KNOWLEDGE = `
 `;
 
 const normalizeMessages = (body: unknown): Array<{ role: "user" | "assistant"; content: string }> => {
-  if (!body || typeof body !== "object") return "";
+  if (!body || typeof body !== "object") return [];
 
   const payload = body as {
     prompt?: unknown;
