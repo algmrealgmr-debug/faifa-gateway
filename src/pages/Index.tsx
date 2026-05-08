@@ -10,7 +10,7 @@ import VisitorCounter from "@/components/VisitorCounter";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
-import FifawiChatWidget from "@/components/FifawiChatWidget";
+import ChatbaseBubble from "@/components/ChatbaseBubble";
 
 const Index = () => {
   const [heroBlur, setHeroBlur] = useState(false);
@@ -210,7 +210,7 @@ const Index = () => {
 
       <Footer />
       <BackToTop />
-      <FifawiChatWidget />
+      <ChatbaseBubble />
     </div>
   );
 };
