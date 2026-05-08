@@ -8,8 +8,12 @@ interface Message {
   content: string;
 }
 
-const AIChatWidget = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+interface AIChatWidgetProps {
+  fullHeight?: boolean;
+}
+
+const AIChatWidget = ({ fullHeight = false }: AIChatWidgetProps) => {
+  const [isExpanded, setIsExpanded] = useState(fullHeight);
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: 'أنا فيفاوي مساعدك الإلكتروني.. كيف أقدر أخدمك؟' }
   ]);
@@ -25,10 +29,10 @@ const AIChatWidget = () => {
   };
 
   useEffect(() => {
-    if (isExpanded) {
+    if (isExpanded || fullHeight) {
       scrollToBottom();
     }
-  }, [messages, isExpanded]);
+  }, [messages, isExpanded, fullHeight]);
 
   const sendMessage = async () => {
     // Prevent multiple requests with both state and ref check
@@ -117,8 +121,104 @@ const AIChatWidget = () => {
   };
 
   const handleClose = () => {
-    setIsExpanded(false);
+    if (!fullHeight) setIsExpanded(false);
   };
+
+  if (fullHeight) {
+    return (
+      <div dir="rtl" className="flex flex-col h-full bg-card">
+        {/* Header */}
+        <div className="flex items-center justify-center px-5 py-4 border-b border-border/50 bg-muted/30 shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <Bot className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <div className="text-center">
+              <h4 className="text-base font-semibold text-foreground">فيفاوي</h4>
+              <p className="text-xs text-muted-foreground">مساعدك الذكي</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-background/50">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+            >
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                msg.role === 'user' ? 'bg-secondary' : 'bg-primary'
+              }`}>
+                {msg.role === 'user' ? (
+                  <User className="w-4 h-4 text-secondary-foreground" />
+                ) : (
+                  <Bot className="w-4 h-4 text-primary-foreground" />
+                )}
+              </div>
+              <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                msg.role === 'user'
+                  ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                  : 'bg-muted text-foreground rounded-tl-sm'
+              }`}>
+                {msg.content}
+              </div>
+            </div>
+          ))}
+
+          {isRetrying && (
+            <div className="text-xs text-muted-foreground text-center">
+              Service is busy, retrying...
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="flex gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <Bot className="w-4 h-4 text-primary-foreground" />
+              </div>
+              <div className="bg-muted px-4 py-3 rounded-2xl rounded-tl-sm">
+                <div className="flex gap-1.5">
+                  <span className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Persistent input */}
+        <div className="border-t border-border/50 bg-card p-3 shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="flex items-center gap-2">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="اكتب رسالتك..."
+              className="flex-1 bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40"
+              disabled={isLoading}
+            />
+            <Button
+              onClick={sendMessage}
+              disabled={!input.trim() || isLoading}
+              size="icon"
+              className="rounded-xl w-12 h-12 bg-primary hover:bg-primary/90 shrink-0"
+            >
+              {isLoading ? (
+                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto">
