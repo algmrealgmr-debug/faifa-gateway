@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.21.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.11.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -310,19 +311,6 @@ const normalizeMessages = (body: unknown): Array<{ role: "user" | "assistant"; c
   return [];
 };
 
-const toGeminiContents = (msgs: Array<{ role: "user" | "assistant"; content: string }>) => {
-  const out: Array<{ role: "user" | "model"; parts: Array<{ text: string }> }> = [];
-  for (const m of msgs) {
-    const role = m.role === "assistant" ? "model" : "user";
-    if (out.length > 0 && out[out.length - 1].role === role) {
-      out[out.length - 1].parts[0].text += "\n" + m.content;
-    } else {
-      out.push({ role, parts: [{ text: m.content }] });
-    }
-  }
-  return out;
-};
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: corsHeaders });
@@ -333,10 +321,13 @@ serve(async (req) => {
   }
 
   try {
-    const apiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
+    void createClient;
+    void GoogleGenerativeAI;
+
+    const apiKey = Deno.env.get("LOVABLE_API_KEY")?.trim();
     if (!apiKey) {
       return jsonResponse(
-        { error: "MISSING_GEMINI_API_KEY", message: "GEMINI_API_KEY is not configured." },
+        { error: "MISSING_LOVABLE_API_KEY", message: "LOVABLE_API_KEY is not configured." },
         400,
       );
     }
@@ -364,41 +355,67 @@ serve(async (req) => {
       );
     }
 
-    const modelName = "gemini-2.0-flash";
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction: FAIFA_KNOWLEDGE,
+    const modelName = "google/gemini-3-flash-preview";
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages: [
+          { role: "system", content: FAIFA_KNOWLEDGE },
+          ...conversation,
+        ],
+      }),
     });
 
-    const contents = toGeminiContents(conversation);
-    const result = await model.generateContent({ contents });
-    const response = await result.response;
-    const generatedText = response.text().trim() || "عذراً، لم أتمكن من معالجة طلبك.";
+    const responseText = await response.text();
+    let data: any = null;
+    try {
+      data = responseText ? JSON.parse(responseText) : null;
+    } catch (_jsonError) {
+      data = null;
+    }
 
-    return jsonResponse({ message: generatedText, response: generatedText, model: modelName }, 200);
-  } catch (error) {
-    const errMsg = error instanceof Error ? error.message : String(error);
-    console.error("Gemini chat function error:", error);
+    if (response.ok) {
+      const generatedText =
+        data?.choices?.[0]?.message?.content?.trim() ||
+        "عذراً، لم أتمكن من معالجة طلبك.";
+      return jsonResponse({ message: generatedText, response: generatedText, model: modelName }, 200);
+    }
 
-    if (errMsg.includes("429") || errMsg.includes("ResourceExhausted") || errMsg.includes("quota")) {
+    if (response.status === 429) {
       return jsonResponse(
         { error: "RATE_LIMIT", message: "فيفاوي مشغول قليلاً الآن، فضلاً انتظر دقيقة وأعد السؤال.", status: 429 },
         200,
       );
     }
-
-    if (errMsg.includes("API key not valid") || errMsg.includes("403")) {
+    if (response.status === 402) {
       return jsonResponse(
-        { error: "AUTH_ERROR", message: "خطأ في مفتاح Gemini API. تحقق من إعدادات المشروع.", status: 403 },
+        { error: "PAYMENT_REQUIRED", message: "Lovable AI credits exhausted.", status: 402 },
         200,
       );
     }
 
+    console.error("Lovable AI error:", { status: response.status, body: data ?? responseText });
     return jsonResponse(
       {
-        error: "GEMINI_API_ERROR",
-        message: errMsg || "AI request failed.",
+        error: "AI_GATEWAY_ERROR",
+        message: data?.error?.message || responseText || "AI gateway request failed.",
+        status: response.status,
+        model: modelName,
+        details: data ?? responseText,
+      },
+      500,
+    );
+  } catch (error) {
+    console.error("Unexpected chat function error:", error);
+    return jsonResponse(
+      {
+        error: "CHAT_FUNCTION_ERROR",
+        message: error instanceof Error ? error.message : "Unexpected server error.",
       },
       500,
     );
