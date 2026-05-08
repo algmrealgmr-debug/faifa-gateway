@@ -7,7 +7,7 @@ const FullScreenChat = () => {
   }, []);
 
   return (
-    <div dir="rtl" className="fixed inset-0 z-[9999] h-[100dvh] w-screen overflow-hidden bg-background">
+    <div dir="rtl" className="dark fixed inset-0 z-[9999] h-[100dvh] w-screen overflow-hidden bg-background">
       <AIChatWidget fullHeight />
     </div>
   );
