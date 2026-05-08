@@ -280,7 +280,7 @@ const FAIFA_KNOWLEDGE = `
 - حافظ على التوازن بين كونك دليلاً مفيداً وشخصية محلية فخورة وأصيلة.
 `;
 
-const normalizePrompt = (body: unknown) => {
+const normalizeMessages = (body: unknown): Array<{ role: "user" | "assistant"; content: string }> => {
   if (!body || typeof body !== "object") return "";
 
   const payload = body as {
@@ -293,22 +293,22 @@ const normalizePrompt = (body: unknown) => {
   const MAX_MESSAGES = 20;
   const clamp = (s: string) => s.trim().slice(0, MAX_MSG_LEN);
 
-  if (typeof payload.prompt === "string") return clamp(payload.prompt);
-  if (typeof payload.message === "string") return clamp(payload.message);
-
+  if (typeof payload.prompt === "string") {
+    return [{ role: "user", content: clamp(payload.prompt) }];
+  }
+  if (typeof payload.message === "string") {
+    return [{ role: "user", content: clamp(payload.message) }];
+  }
   if (Array.isArray(payload.messages)) {
     return payload.messages
       .slice(-MAX_MESSAGES)
-      .filter((message) => typeof message?.content === "string")
-      .map((message) => {
-        const role = message.role === "assistant" ? "فيفاوي" : "الزائر";
-        return `${role}: ${clamp(String(message.content))}`;
-      })
-      .join("\n")
-      .trim();
+      .filter((m) => typeof m?.content === "string" && (m.role === "user" || m.role === "assistant"))
+      .map((m) => ({
+        role: m.role === "assistant" ? "assistant" as const : "user" as const,
+        content: clamp(String(m.content)),
+      }));
   }
-
-  return "";
+  return [];
 };
 
 serve(async (req) => {
@@ -324,10 +324,10 @@ serve(async (req) => {
     void createClient;
     void GoogleGenerativeAI;
 
-    const apiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
+    const apiKey = Deno.env.get("LOVABLE_API_KEY")?.trim();
     if (!apiKey) {
       return jsonResponse(
-        { error: "MISSING_GEMINI_API_KEY", message: "GEMINI_API_KEY is not configured." },
+        { error: "MISSING_LOVABLE_API_KEY", message: "LOVABLE_API_KEY is not configured." },
         400,
       );
     }
@@ -339,39 +339,37 @@ serve(async (req) => {
       return jsonResponse({ error: "INVALID_JSON", message: "Request body must be valid JSON." }, 400);
     }
 
-    const prompt = normalizePrompt(requestBody);
-    if (!prompt) {
+    const conversation = normalizeMessages(requestBody);
+    if (!conversation.length) {
       return jsonResponse(
         { error: "MISSING_PROMPT", message: "Request body must include a prompt or messages." },
         400,
       );
     }
 
-    if (prompt.length > 20000) {
+    const totalLen = conversation.reduce((n, m) => n + m.content.length, 0);
+    if (totalLen > 30000) {
       return jsonResponse(
         { error: "PROMPT_TOO_LARGE", message: "Conversation payload is too large." },
         413,
       );
     }
 
-    const fullPrompt = `${FAIFA_KNOWLEDGE}\n\nسؤال أو سياق الزائر:\n${prompt}`;
-    const geminiBody = JSON.stringify({
-      contents: [
-        {
-          parts: [{ text: fullPrompt }],
-        },
-      ],
-    });
-
-    const modelName = "gemini-flash-latest";
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: geminiBody,
+    const modelName = "google/gemini-3-flash-preview";
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        model: modelName,
+        messages: [
+          { role: "system", content: FAIFA_KNOWLEDGE },
+          ...conversation,
+        ],
+      }),
+    });
 
     const responseText = await response.text();
     let data: any = null;
@@ -383,28 +381,30 @@ serve(async (req) => {
 
     if (response.ok) {
       const generatedText =
-        data?.candidates?.[0]?.content?.parts
-          ?.map((part: { text?: string }) => part.text || "")
-          .join("")
-          .trim() || "عذراً، لم أتمكن من معالجة طلبك.";
-
+        data?.choices?.[0]?.message?.content?.trim() ||
+        "عذراً، لم أتمكن من معالجة طلبك.";
       return jsonResponse({ message: generatedText, response: generatedText, model: modelName }, 200);
     }
 
-    const lastGeminiStatus = response.status;
-    const lastGeminiError = data?.error?.message || responseText || "Gemini API request failed.";
+    if (response.status === 429) {
+      return jsonResponse(
+        { error: "RATE_LIMIT", message: "فيفاوي مشغول قليلاً الآن، فضلاً انتظر دقيقة وأعد السؤال.", status: 429 },
+        200,
+      );
+    }
+    if (response.status === 402) {
+      return jsonResponse(
+        { error: "PAYMENT_REQUIRED", message: "Lovable AI credits exhausted.", status: 402 },
+        200,
+      );
+    }
 
-    console.error("Gemini API error:", {
-      status: lastGeminiStatus,
-      model: modelName,
-      body: data ?? responseText,
-    });
-
+    console.error("Lovable AI error:", { status: response.status, body: data ?? responseText });
     return jsonResponse(
       {
-        error: "GEMINI_API_ERROR",
-        message: lastGeminiError,
-        status: lastGeminiStatus,
+        error: "AI_GATEWAY_ERROR",
+        message: data?.error?.message || responseText || "AI gateway request failed.",
+        status: response.status,
         model: modelName,
         details: data ?? responseText,
       },
