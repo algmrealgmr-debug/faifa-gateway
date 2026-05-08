@@ -271,7 +271,7 @@ const AIChatWidget = ({ fullHeight = false }: AIChatWidgetProps) => {
             className="inline-flex items-center justify-center gap-1 mt-2 text-[10px] text-muted-foreground/40 hover:text-primary transition-colors w-full"
           >
             <User className="w-3 h-3" />
-            <span>تطوير بواسطة</span>
+            <span>تطوير بواسطة <strong className="font-semibold">@wu3x</strong></span>
           </a>
         </div>
       </div>
@@ -400,7 +400,7 @@ const AIChatWidget = ({ fullHeight = false }: AIChatWidgetProps) => {
               className="flex items-center justify-center gap-1 py-2 text-[10px] text-muted-foreground/40 hover:text-primary transition-colors bg-background/50"
             >
               <User className="w-3 h-3" />
-              <span>تطوير بواسطة</span>
+              <span>تطوير بواسطة <strong className="font-semibold">@wu3x</strong></span>
             </a>
           </div>
         )}
