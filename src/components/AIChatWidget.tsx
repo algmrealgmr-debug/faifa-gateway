@@ -209,7 +209,7 @@ const AIChatWidget = ({ fullHeight = false }: AIChatWidgetProps) => {
                   ? 'bg-primary text-primary-foreground rounded-tr-sm'
                   : 'bg-muted text-foreground rounded-tl-sm'
               }`}>
-                {msg.content}
+                {renderMessageContent(msg.content)}
               </div>
             </div>
           ))}
@@ -355,7 +355,7 @@ const AIChatWidget = ({ fullHeight = false }: AIChatWidgetProps) => {
                       ? 'bg-primary text-primary-foreground rounded-tr-sm' 
                       : 'bg-muted text-foreground rounded-tl-sm'
                   }`}>
-                    {msg.content}
+                    {renderMessageContent(msg.content)}
                   </div>
                 </div>
               ))}
