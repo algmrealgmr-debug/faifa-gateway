@@ -12,9 +12,8 @@ import SplashScreen from "./components/SplashScreen";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const isChatRoute =
-    typeof window !== "undefined" &&
-    /^\/(chat|assistant)\/?$/.test(window.location.pathname);
+  const path = typeof window !== "undefined" ? window.location.pathname : "/";
+  const isChatRoute = /\/(chat|assistant)\/?$/.test(path);
   const [showSplash, setShowSplash] = useState(!isChatRoute);
 
   return (
