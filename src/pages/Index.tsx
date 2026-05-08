@@ -12,10 +12,18 @@ import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
 import FloatingChatButton from "@/components/FloatingChatButton";
 import SplashScreen from "@/components/SplashScreen";
+import Chat from "./Chat";
 
 const Index = () => {
-  const [showSplash, setShowSplash] = useState(true);
+  const path = typeof window !== "undefined" ? window.location.pathname.replace(/\/+$/, "") || "/" : "/";
+  const isRootPath = path === "/";
+  const isChatPath = path === "/chat" || path === "/assistant";
+  const [showSplash, setShowSplash] = useState(isRootPath);
   const [heroBlur, setHeroBlur] = useState(false);
+
+  if (isChatPath) {
+    return <Chat />;
+  }
 
   // Listen for intro blur event
   useEffect(() => {
@@ -32,10 +40,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
-      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-      <div className={`transition-all duration-500 ${heroBlur ? 'blur-sm brightness-75' : ''}`}>
-        <Header />
-      </div>
+      {isRootPath && showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      {isRootPath && (
+        <div className={`transition-all duration-500 ${heroBlur ? 'blur-sm brightness-75' : ''}`}>
+          <Header />
+        </div>
+      )}
       <Navigation />
       
       {/* Visitor Counter Section */}
