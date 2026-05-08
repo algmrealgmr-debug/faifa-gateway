@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Send, Bot, User, X, Sparkles, MapPin, ExternalLink } from 'lucide-react';
+import { Search, Send, Bot, User, X, Sparkles, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 
