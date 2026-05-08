@@ -1,7 +1,6 @@
 import { Hotel, Trees, Coffee, Bed, Mountain, Binoculars, UtensilsCrossed, Tent, Home, Church, Instagram } from "lucide-react";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
-import { useState, useEffect } from "react";
 import CategorySection from "@/components/CategorySection";
 import PlaceCard from "@/components/PlaceCard";
 import DeveloperSection from "@/components/DeveloperSection";
