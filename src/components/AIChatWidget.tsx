@@ -263,6 +263,16 @@ const AIChatWidget = ({ fullHeight = false }: AIChatWidgetProps) => {
               )}
             </Button>
           </div>
+          {/* Attribution */}
+          <a
+            href="https://www.instagram.com/wu3x?igsh=MTJpMDJsaTV2d3pvOQ%3D%3D&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1 mt-2 text-[10px] text-muted-foreground/40 hover:text-primary transition-colors w-full"
+          >
+            <User className="w-3 h-3" />
+            <span>تطوير بواسطة</span>
+          </a>
         </div>
       </div>
     );
