@@ -1,11 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.11.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 
 const FAIFA_KNOWLEDGE = `
 أنت "فيفاوي"، المساعد الذكي الرسمي لبوابة فيفاء السياحية. أنت خبير محلي ودود ومرحب بالزوار.
@@ -109,189 +118,133 @@ const FAIFA_KNOWLEDGE = `
 - شجع الزوار على استكشاف فيفاء
 `;
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const normalizePrompt = (body: unknown) => {
+  if (!body || typeof body !== "object") return "";
+
+  const payload = body as {
+    prompt?: unknown;
+    message?: unknown;
+    messages?: Array<{ role?: string; content?: unknown }>;
+  };
+
+  if (typeof payload.prompt === "string") return payload.prompt.trim();
+  if (typeof payload.message === "string") return payload.message.trim();
+
+  if (Array.isArray(payload.messages)) {
+    return payload.messages
+      .filter((message) => typeof message?.content === "string")
+      .map((message) => {
+        const role = message.role === "assistant" ? "فيفاوي" : "الزائر";
+        return `${role}: ${String(message.content).trim()}`;
+      })
+      .join("\n")
+      .trim();
+  }
+
+  return "";
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { status: 200, headers: corsHeaders });
   }
 
-  const requestId = crypto.randomUUID();
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "METHOD_NOT_ALLOWED", message: "Only POST requests are allowed." }, 405);
+  }
 
   try {
-    const { messages } = await req.json();
+    void createClient;
+    void GoogleGenerativeAI;
 
-    const apiKeyRaw = Deno.env.get("GEMINI_API_KEY");
-    const GEMINI_API_KEY = apiKeyRaw?.trim();
-
-    console.log("[chat] requestId:", requestId);
-    console.log("[chat] GEMINI_API_KEY present:", Boolean(GEMINI_API_KEY));
-
-    if (!GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not configured (undefined/empty)");
-    }
-
-    if (!Array.isArray(messages)) {
-      throw new Error("Invalid request body: messages must be an array");
-    }
-
-    console.log("[chat] Processing chat request with", messages.length, "messages");
-
-    const geminiMessages = messages.map(
-      (msg: { role: string; content: string }) => ({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: String(msg.content ?? "") }],
-      }),
-    );
-
-    const modelName = "gemini-1.5-flash";
-    // Required URL format:
-    // https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(
-      GEMINI_API_KEY,
-    )}`;
-
-    const body = {
-      system_instruction: {
-        parts: [{ text: FAIFA_KNOWLEDGE }],
-      },
-      contents: geminiMessages,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1024,
-      },
-    };
-
-    const maxAttempts = 5;
-    const baseDelayMs = 900;
-
-    let lastStatus: number | undefined;
-    let lastBodyText: string | undefined;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      console.log(
-        `[chat] requestId=${requestId} Gemini call attempt ${attempt}/${maxAttempts}`,
+    const apiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
+    if (!apiKey) {
+      return jsonResponse(
+        { error: "MISSING_GEMINI_API_KEY", message: "GEMINI_API_KEY is not configured." },
+        400,
       );
+    }
 
-      let response: Response;
-      try {
-        response = await fetch(url, {
+    let requestBody: unknown;
+    try {
+      requestBody = await req.json();
+    } catch (_parseError) {
+      return jsonResponse({ error: "INVALID_JSON", message: "Request body must be valid JSON." }, 400);
+    }
+
+    const prompt = normalizePrompt(requestBody);
+    if (!prompt) {
+      return jsonResponse(
+        { error: "MISSING_PROMPT", message: "Request body must include a prompt or messages." },
+        400,
+      );
+    }
+
+    const fullPrompt = `${FAIFA_KNOWLEDGE}\n\nسؤال أو سياق الزائر:\n${prompt}`;
+    const geminiBody = JSON.stringify({
+      contents: [
+        {
+          parts: [{ text: fullPrompt }],
+        },
+      ],
+    });
+
+    const modelNames = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"];
+    let data: any = null;
+    let lastGeminiError = "Gemini API request failed.";
+    let lastGeminiStatus = 500;
+
+    for (const modelName of modelNames) {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
+        {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-      } catch (err) {
-        console.error(
-          `[chat] requestId=${requestId} Network/connection error calling Gemini:`,
-          err,
-        );
-        // Connection errors are not retryable by status; surface a clear error.
-        return new Response(
-          JSON.stringify({
-            error: "GEMINI_CONNECTION_ERROR",
-            message: "Failed to reach Gemini API",
-            requestId,
-            details: String(err?.message ?? err),
-          }),
-          {
-            status: 502,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
-        );
+          body: geminiBody,
+        },
+      );
+
+      const responseText = await response.text();
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch (_jsonError) {
+        data = null;
       }
 
       if (response.ok) {
-        const data = await response.json();
-        console.log(`[chat] requestId=${requestId} Gemini response received`);
-
         const generatedText =
-          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-          "عذراً، لم أتمكن من معالجة طلبك.";
+          data?.candidates?.[0]?.content?.parts
+            ?.map((part: { text?: string }) => part.text || "")
+            .join("")
+            .trim() || "عذراً، لم أتمكن من معالجة طلبك.";
 
-        return new Response(JSON.stringify({ message: generatedText }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse({ message: generatedText, response: generatedText, model: modelName }, 200);
       }
 
-      lastStatus = response.status;
-      lastBodyText = await response.text();
+      lastGeminiStatus = response.status;
+      lastGeminiError = data?.error?.message || responseText || lastGeminiError;
 
-      // Always log full response body for debugging/billing/quota reasons.
-      console.error(
-        `[chat] requestId=${requestId} Gemini API error status=${lastStatus} body=`,
-        lastBodyText,
-      );
-
-      if (lastStatus === 429) {
-        if (attempt < maxAttempts) {
-          const jitter = Math.floor(Math.random() * 250);
-          const backoff = baseDelayMs * Math.pow(2, attempt - 1) + jitter;
-          console.warn(
-            `[chat] requestId=${requestId} Rate limited (429). Backing off for ${backoff}ms before retry...`,
-          );
-          await sleep(backoff);
-          continue;
-        }
-
-        // Retries exhausted: return explicit rate-limit error with details.
-        return new Response(
-          JSON.stringify({
-            error: "RATE_LIMIT",
-            message: "Gemini rate limit after retries",
-            requestId,
-            attempts: maxAttempts,
-            status: lastStatus,
-            responseBody: lastBodyText,
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
-        );
+      if (response.status !== 404) {
+        break;
       }
-
-      // Non-429 errors: don't retry by default; surface clear error.
-      return new Response(
-        JSON.stringify({
-          error: "GEMINI_API_ERROR",
-          message: "Gemini API request failed",
-          requestId,
-          status: lastStatus,
-          responseBody: lastBodyText,
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
     }
 
-    // Should never reach here.
-    return new Response(
-      JSON.stringify({
-        error: "UNEXPECTED_STATE",
-        message: "Unexpected chat function state",
-        requestId,
-        status: lastStatus,
-        responseBody: lastBodyText,
-      }),
+    return jsonResponse(
       {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        error: "GEMINI_API_ERROR",
+        message: lastGeminiError,
+        status: lastGeminiStatus,
       },
+      500,
     );
   } catch (error) {
-    console.error(`[chat] requestId=${requestId} Error in chat function:`, error);
-    return new Response(
-      JSON.stringify({
-        error: "CHAT_FUNCTION_ERROR",
-        message: error?.message ?? "Unknown error",
-        requestId,
-      }),
+    console.error("Unexpected chat function error:", error);
+    return jsonResponse(
       {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        error: "CHAT_FUNCTION_ERROR",
+        message: error instanceof Error ? error.message : "Unexpected server error.",
       },
+      500,
     );
   }
 });
