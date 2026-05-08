@@ -210,15 +210,20 @@ const normalizePrompt = (body: unknown) => {
     messages?: Array<{ role?: string; content?: unknown }>;
   };
 
-  if (typeof payload.prompt === "string") return payload.prompt.trim();
-  if (typeof payload.message === "string") return payload.message.trim();
+  const MAX_MSG_LEN = 2000;
+  const MAX_MESSAGES = 20;
+  const clamp = (s: string) => s.trim().slice(0, MAX_MSG_LEN);
+
+  if (typeof payload.prompt === "string") return clamp(payload.prompt);
+  if (typeof payload.message === "string") return clamp(payload.message);
 
   if (Array.isArray(payload.messages)) {
     return payload.messages
+      .slice(-MAX_MESSAGES)
       .filter((message) => typeof message?.content === "string")
       .map((message) => {
         const role = message.role === "assistant" ? "فيفاوي" : "الزائر";
-        return `${role}: ${String(message.content).trim()}`;
+        return `${role}: ${clamp(String(message.content))}`;
       })
       .join("\n")
       .trim();
