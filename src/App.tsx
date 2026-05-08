@@ -11,20 +11,26 @@ import SplashScreen from "./components/SplashScreen";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  const path = typeof window !== "undefined" ? window.location.pathname : "/";
-  const isChatRoute = /\/(chat|assistant)\/?$/.test(path);
-  const [showSplash, setShowSplash] = useState(!isChatRoute);
+const HomeRoute = () => {
+  const [showSplash, setShowSplash] = useState(true);
 
+  return (
+    <>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <Index />
+    </>
+  );
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
         <Toaster />
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<HomeRoute />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/assistant" element={<Chat />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
