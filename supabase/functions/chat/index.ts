@@ -268,6 +268,13 @@ serve(async (req) => {
       );
     }
 
+    if (prompt.length > 20000) {
+      return jsonResponse(
+        { error: "PROMPT_TOO_LARGE", message: "Conversation payload is too large." },
+        413,
+      );
+    }
+
     const fullPrompt = `${FAIFA_KNOWLEDGE}\n\nسؤال أو سياق الزائر:\n${prompt}`;
     const geminiBody = JSON.stringify({
       contents: [
