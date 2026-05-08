@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,20 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
-import SplashScreen from "./components/SplashScreen";
 
 const queryClient = new QueryClient();
-
-const HomeRoute = () => {
-  const [showSplash, setShowSplash] = useState(true);
-
-  return (
-    <>
-      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-      <Index />
-    </>
-  );
-};
 
 const App = () => {
   return (
@@ -30,7 +17,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<HomeRoute />} />
+            <Route path="/" element={<Index />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/assistant" element={<Chat />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
