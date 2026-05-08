@@ -364,7 +364,7 @@ serve(async (req) => {
       );
     }
 
-    const modelName = "gemini-1.5-flash";
+    const modelName = "gemini-1.5-flash-latest";
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
       model: modelName,
