@@ -16,14 +16,15 @@ import Chat from "./Chat";
 
 const Index = () => {
   const path = typeof window !== "undefined" ? window.location.pathname.replace(/\/+$/, "") || "/" : "/";
-  const isRootPath = path === "/";
   const isChatPath = path === "/chat" || path === "/assistant";
-  const [showSplash, setShowSplash] = useState(isRootPath);
-  const [heroBlur, setHeroBlur] = useState(false);
 
   if (isChatPath) {
     return <Chat />;
   }
+
+  const isRootPath = path === "/";
+  const [showSplash, setShowSplash] = useState(isRootPath);
+  const [heroBlur, setHeroBlur] = useState(false);
 
   // Listen for intro blur event
   useEffect(() => {

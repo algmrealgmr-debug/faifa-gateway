@@ -29,6 +29,10 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  if (typeof window !== "undefined" && window.location.pathname === "/chat") {
+    return <Chat />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
