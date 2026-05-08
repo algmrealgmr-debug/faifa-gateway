@@ -12,16 +12,9 @@ import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
 import FloatingChatButton from "@/components/FloatingChatButton";
 import SplashScreen from "@/components/SplashScreen";
-import Chat from "./Chat";
 
 const Index = () => {
   const path = typeof window !== "undefined" ? window.location.pathname.replace(/\/+$/, "") || "/" : "/";
-  const isChatPath = path === "/chat" || path === "/assistant";
-
-  if (isChatPath) {
-    return <Chat />;
-  }
-
   const isRootPath = path === "/";
   const [showSplash, setShowSplash] = useState(isRootPath);
   const [heroBlur, setHeroBlur] = useState(false);
