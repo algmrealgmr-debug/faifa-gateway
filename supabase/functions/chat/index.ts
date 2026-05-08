@@ -181,47 +181,62 @@ serve(async (req) => {
     }
 
     const fullPrompt = `${FAIFA_KNOWLEDGE}\n\nسؤال أو سياق الزائر:\n${prompt}`;
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: fullPrompt }],
-            },
-          ],
-        }),
-      },
-    );
-
-    const responseText = await response.text();
-    let data: any = null;
-    try {
-      data = responseText ? JSON.parse(responseText) : null;
-    } catch (_jsonError) {
-      data = null;
-    }
-
-    if (!response.ok) {
-      return jsonResponse(
+    const geminiBody = JSON.stringify({
+      contents: [
         {
-          error: "GEMINI_API_ERROR",
-          message: data?.error?.message || "Gemini API request failed.",
-          status: response.status,
+          parts: [{ text: fullPrompt }],
         },
-        500,
+      ],
+    });
+
+    const modelNames = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"];
+    let data: any = null;
+    let lastGeminiError = "Gemini API request failed.";
+    let lastGeminiStatus = 500;
+
+    for (const modelName of modelNames) {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: geminiBody,
+        },
       );
+
+      const responseText = await response.text();
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch (_jsonError) {
+        data = null;
+      }
+
+      if (response.ok) {
+        const generatedText =
+          data?.candidates?.[0]?.content?.parts
+            ?.map((part: { text?: string }) => part.text || "")
+            .join("")
+            .trim() || "عذراً، لم أتمكن من معالجة طلبك.";
+
+        return jsonResponse({ message: generatedText, response: generatedText, model: modelName }, 200);
+      }
+
+      lastGeminiStatus = response.status;
+      lastGeminiError = data?.error?.message || responseText || lastGeminiError;
+
+      if (response.status !== 404) {
+        break;
+      }
     }
 
-    const generatedText =
-      data?.candidates?.[0]?.content?.parts
-        ?.map((part: { text?: string }) => part.text || "")
-        .join("")
-        .trim() || "عذراً، لم أتمكن من معالجة طلبك.";
-
-    return jsonResponse({ message: generatedText, response: generatedText }, 200);
+    return jsonResponse(
+      {
+        error: "GEMINI_API_ERROR",
+        message: lastGeminiError,
+        status: lastGeminiStatus,
+      },
+      500,
+    );
   } catch (error) {
     console.error("Unexpected chat function error:", error);
     return jsonResponse(
