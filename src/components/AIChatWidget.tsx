@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Send, Bot, User, X, Sparkles } from 'lucide-react';
+import { Search, Send, Bot, User, X, Sparkles, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -11,6 +11,54 @@ interface Message {
 interface AIChatWidgetProps {
   fullHeight?: boolean;
 }
+
+// Detects Google Maps URLs (maps.google.com, google.com/maps, goo.gl/maps, maps.app.goo.gl)
+const MAPS_URL_REGEX =
+  /(https?:\/\/(?:www\.)?(?:google\.[a-z.]+\/maps[^\s)]*|maps\.google\.[a-z.]+\/[^\s)]*|maps\.app\.goo\.gl\/[^\s)]*|goo\.gl\/maps\/[^\s)]*))/gi;
+
+const MapLinkButton = ({ url }: { url: string }) => (
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-2 mt-2 px-3 py-2 rounded-xl bg-background/80 hover:bg-primary hover:text-primary-foreground border border-primary/30 text-primary text-xs font-medium shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
+  >
+    <MapPin className="w-4 h-4" />
+    <span>الموقع على الخريطة</span>
+  </a>
+);
+
+const renderMessageContent = (content: string) => {
+  const parts: Array<{ type: 'text' | 'map'; value: string }> = [];
+  let lastIndex = 0;
+  const regex = new RegExp(MAPS_URL_REGEX);
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', value: content.slice(lastIndex, match.index) });
+    }
+    parts.push({ type: 'map', value: match[0] });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < content.length) {
+    parts.push({ type: 'text', value: content.slice(lastIndex) });
+  }
+  if (parts.length === 0) parts.push({ type: 'text', value: content });
+
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.type === 'text' ? (
+          <span key={i} className="whitespace-pre-wrap">{p.value}</span>
+        ) : (
+          <div key={i} className="block">
+            <MapLinkButton url={p.value} />
+          </div>
+        )
+      )}
+    </>
+  );
+};
 
 const AIChatWidget = ({ fullHeight = false }: AIChatWidgetProps) => {
   const [isExpanded, setIsExpanded] = useState(fullHeight);
