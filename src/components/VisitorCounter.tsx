@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const VisitorCounter = () => {
   const [visitorCount, setVisitorCount] = useState(5078);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // نقرأ العدد من LocalStorage
@@ -25,7 +27,7 @@ const VisitorCounter = () => {
 
   return (
     <div className="text-center text-sm text-muted-foreground mt-5">
-      عدد الزوار: <span className="font-semibold">{visitorCount}</span>
+      {t("عدد الزوار:", "Visitors:")} <span className="font-semibold">{visitorCount}</span>
     </div>
   );
 };

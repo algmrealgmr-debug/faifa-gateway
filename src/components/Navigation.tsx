@@ -1,7 +1,9 @@
 import { Hotel, Trees, Coffee } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Navigation = () => {
+  const { t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [introActive, setIntroActive] = useState(false);
   const [glowIndex, setGlowIndex] = useState(-1);
@@ -81,21 +83,21 @@ const Navigation = () => {
   const navItems = [
     {
       id: "hotels",
-      label: "الفنادق",
+      label: t("الفنادق", "Hotels"),
       icon: Hotel,
-      ariaLabel: "الانتقال إلى قسم الفنادق"
+      ariaLabel: t("الانتقال إلى قسم الفنادق", "Go to Hotels section")
     },
     {
       id: "parks", 
-      label: "المنتزهات",
+      label: t("المنتزهات", "Parks"),
       icon: Trees,
-      ariaLabel: "الانتقال إلى قسم المنتزهات"
+      ariaLabel: t("الانتقال إلى قسم المنتزهات", "Go to Parks section")
     },
     {
       id: "cafes",
-      label: "الكافيهات", 
+      label: t("الكافيهات", "Cafés"),
       icon: Coffee,
-      ariaLabel: "الانتقال إلى قسم الكافيهات"
+      ariaLabel: t("الانتقال إلى قسم الكافيهات", "Go to Cafés section")
     }
   ];
 
@@ -123,7 +125,7 @@ const Navigation = () => {
         </ul>
         {/* Guide text */}
         <div className={`text-center pb-3 transition-all duration-500 ${showGuideText ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden'}`}>
-          <span className="text-sm text-primary-foreground/70">اختر ما يناسبك</span>
+          <span className="text-sm text-primary-foreground/70">{t("اختر ما يناسبك", "Choose what suits you")}</span>
         </div>
       </div>
     </nav>

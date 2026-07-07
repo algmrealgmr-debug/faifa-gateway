@@ -10,13 +10,15 @@ import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
 import ThemeToggle from "@/components/ThemeToggle";
 import FloatingChatButton from "@/components/FloatingChatButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
+  const { lang, t } = useLanguage();
   const path = typeof window !== "undefined" ? window.location.pathname.replace(/\/+$/, "") || "/" : "/";
   const isRootPath = path === "/";
 
   return (
-    <div className="min-h-screen bg-background" dir="rtl">
+    <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
       {isRootPath && <Header />}
       <Navigation />
       
@@ -34,7 +36,7 @@ const Index = () => {
         {/* Hotels Section */}
         <CategorySection
           id="hotels"
-          title="الفنادق / Hotels"
+          title={t("الفنادق", "Hotels")}
           icon={<Hotel />}
         >
           <PlaceCard
@@ -81,7 +83,7 @@ const Index = () => {
         {/* Parks Section */}
         <CategorySection
           id="parks"
-          title="المنتزهات / Parks & Resorts"
+          title={t("المنتزهات", "Parks & Resorts")}
           icon={<Trees />}
         >
           <PlaceCard
@@ -138,7 +140,7 @@ const Index = () => {
         {/* Cafes Section */}
         <CategorySection
           id="cafes"
-          title="الكافيهات / Cafes"
+          title={t("الكافيهات", "Cafés")}
           icon={<Coffee />}
         >
           <PlaceCard
