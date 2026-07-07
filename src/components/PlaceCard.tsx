@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MapPin, Expand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ExplodedPlaceView from "./ExplodedPlaceView";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PlaceCardProps {
   title: string;
@@ -14,6 +15,23 @@ interface PlaceCardProps {
 
 const PlaceCard = ({ title, description, englishDescription, additionalContent, mapLink, icon }: PlaceCardProps) => {
   const [isExplodedOpen, setIsExplodedOpen] = useState(false);
+  const { lang, t } = useLanguage();
+
+  // Titles sometimes come in the form "عربي – English" — pick the right side.
+  const splitTitle = (raw: string) => {
+    const seps = [" – ", " - ", " / "];
+    for (const s of seps) {
+      if (raw.includes(s)) {
+        const [ar, en] = raw.split(s);
+        return { ar: ar.trim(), en: en.trim() };
+      }
+    }
+    return { ar: raw, en: raw };
+  };
+  const parts = splitTitle(title);
+  const displayTitle = lang === "en" ? parts.en : parts.ar;
+  const primaryDesc = lang === "en" ? (englishDescription || description) : description;
+  const secondaryDesc = lang === "en" ? undefined : englishDescription;
 
   return (
     <>
@@ -37,18 +55,18 @@ const PlaceCard = ({ title, description, englishDescription, additionalContent, 
               {icon}
             </div>
             <h3 className="text-lg font-medium text-foreground leading-snug flex-1">
-              {title}
+              {displayTitle}
             </h3>
           </div>
           
-          {(description || englishDescription || additionalContent) && (
+          {(primaryDesc || secondaryDesc || additionalContent) && (
             <div className="space-y-2 pr-10">
-              {description && (
-                <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+              {primaryDesc && (
+                <p className="text-muted-foreground text-sm leading-relaxed">{primaryDesc}</p>
               )}
-              {englishDescription && (
+              {secondaryDesc && (
                 <p className="text-muted-foreground/70 text-xs leading-relaxed">
-                  {englishDescription}
+                  {secondaryDesc}
                 </p>
               )}
               {additionalContent && (
@@ -74,7 +92,7 @@ const PlaceCard = ({ title, description, englishDescription, additionalContent, 
                 className="flex items-center gap-2"
               >
                 <MapPin className="w-3.5 h-3.5" />
-                <span>عرض الموقع</span>
+                <span>{t("عرض الموقع", "View location")}</span>
               </a>
             </Button>
             
@@ -88,7 +106,7 @@ const PlaceCard = ({ title, description, englishDescription, additionalContent, 
               }}
             >
               <Expand className="w-3.5 h-3.5 mr-1" />
-              <span>استكشف</span>
+              <span>{t("استكشف", "Explore")}</span>
             </Button>
           </div>
         </div>
@@ -97,9 +115,9 @@ const PlaceCard = ({ title, description, englishDescription, additionalContent, 
       <ExplodedPlaceView
         isOpen={isExplodedOpen}
         onClose={() => setIsExplodedOpen(false)}
-        title={title}
-        description={description}
-        englishDescription={englishDescription}
+        title={displayTitle}
+        description={primaryDesc}
+        englishDescription={secondaryDesc}
         mapLink={mapLink}
         icon={icon}
       />

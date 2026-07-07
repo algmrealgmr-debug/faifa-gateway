@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { MapPin, Navigation, X, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
@@ -203,6 +204,7 @@ const typeLabels = {
 };
 
 const InteractiveMap = () => {
+  const { lang, t } = useLanguage();
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [filter, setFilter] = useState<"all" | "hotel" | "park" | "cafe">("all");
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -344,11 +346,11 @@ const InteractiveMap = () => {
         <div className="flex items-center justify-center gap-3 mb-4">
           <Map className="w-8 h-8 text-primary" />
           <h2 className="text-3xl md:text-4xl font-bold text-primary">
-            خريطة المعالم / Landmarks Map
+            {t("خريطة المعالم", "Landmarks Map")}
           </h2>
         </div>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          اكتشف جميع المعالم السياحية في فيفاء على الخريطة التفاعلية
+          {t("اكتشف جميع المعالم السياحية في فيفاء على الخريطة التفاعلية", "Discover all Faifa's tourist landmarks on the interactive map")}
         </p>
       </div>
 
@@ -359,28 +361,28 @@ const InteractiveMap = () => {
           onClick={() => setFilter("all")}
           className="rounded-full"
         >
-          الكل / All
+          {t("الكل", "All")}
         </Button>
         <Button
           variant={filter === "hotel" ? "default" : "outline"}
           onClick={() => setFilter("hotel")}
           className={`rounded-full ${filter === "hotel" ? "" : "hover:border-blue-500 hover:text-blue-500"}`}
         >
-          🏨 الفنادق / Hotels
+          🏨 {t("الفنادق", "Hotels")}
         </Button>
         <Button
           variant={filter === "park" ? "default" : "outline"}
           onClick={() => setFilter("park")}
           className={`rounded-full ${filter === "park" ? "" : "hover:border-green-500 hover:text-green-500"}`}
         >
-          🌳 المنتزهات / Parks
+          🌳 {t("المنتزهات", "Parks")}
         </Button>
         <Button
           variant={filter === "cafe" ? "default" : "outline"}
           onClick={() => setFilter("cafe")}
           className={`rounded-full ${filter === "cafe" ? "" : "hover:border-amber-500 hover:text-amber-500"}`}
         >
-          ☕ الكافيهات / Cafes
+          ☕ {t("الكافيهات", "Cafés")}
         </Button>
       </div>
 
@@ -392,7 +394,7 @@ const InteractiveMap = () => {
               <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                  <p className="text-sm text-muted-foreground">جاري تحميل الخريطة...</p>
+                  <p className="text-sm text-muted-foreground">{t("جاري تحميل الخريطة...", "Loading map...")}</p>
                 </div>
               </div>
             )}
@@ -410,8 +412,8 @@ const InteractiveMap = () => {
                 <MapPin size={20} />
               </div>
               <div>
-                <h4 className="font-bold text-foreground">{selectedLocation.name}</h4>
-                <p className="text-sm text-muted-foreground">{selectedLocation.nameEn}</p>
+                <h4 className="font-bold text-foreground">{lang === "en" ? selectedLocation.nameEn : selectedLocation.name}</h4>
+                <p className="text-sm text-muted-foreground">{lang === "en" ? selectedLocation.name : selectedLocation.nameEn}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -421,7 +423,7 @@ const InteractiveMap = () => {
                 onClick={() => handleOpenInMaps(selectedLocation.mapLink)}
               >
                 <Navigation className="w-4 h-4 ml-2" />
-                افتح في خرائط قوقل
+                {t("افتح في خرائط قوقل", "Open in Google Maps")}
               </Button>
               <Button
                 size="sm"

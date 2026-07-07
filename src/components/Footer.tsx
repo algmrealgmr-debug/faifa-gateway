@@ -11,40 +11,42 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SHARE_URL = "https://faifa.lovable.app";
-const SHARE_TITLE = "اكتشف فيفاء";
-const SHARE_TEXT = "تعرف على فيفاء وجمالها من خلال هذا الموقع الرائع ✨";
 
 const Footer = () => {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const { lang, t } = useLanguage();
+  const SHARE_TITLE = t("اكتشف فيفاء", "Discover Faifa");
+  const SHARE_TEXT = t("تعرف على فيفاء وجمالها من خلال هذا الموقع الرائع ✨", "Explore Faifa and its beauty through this amazing website ✨");
 
   const socialLinks = [
     {
-      name: "تويتر",
+      name: t("تويتر", "Twitter"),
       icon: "🐦",
       href: "#",
-      ariaLabel: "زيارة حساب تويتر"
+      ariaLabel: t("زيارة حساب تويتر", "Visit Twitter")
     },
     {
-      name: "إنستقرام",
+      name: t("إنستقرام", "Instagram"),
       icon: "📷",
       href: "#",
-      ariaLabel: "زيارة حساب إنستقرام"
+      ariaLabel: t("زيارة حساب إنستقرام", "Visit Instagram")
     },
     {
-      name: "سناب شات",
+      name: t("سناب شات", "Snapchat"),
       icon: "👻",
       href: "#",
-      ariaLabel: "زيارة حساب سناب شات"
+      ariaLabel: t("زيارة حساب سناب شات", "Visit Snapchat")
     },
     {
-      name: "تيك توك",
+      name: t("تيك توك", "TikTok"),
       icon: "🎵",
       href: "#",
-      ariaLabel: "زيارة حساب تيك توك"
+      ariaLabel: t("زيارة حساب تيك توك", "Visit TikTok")
     }
   ];
 
@@ -53,14 +55,14 @@ const Footer = () => {
       await navigator.clipboard.writeText(SHARE_URL);
       setCopied(true);
       toast({
-        title: "تم النسخ",
-        description: "تم نسخ الرابط بنجاح",
+        title: t("تم النسخ", "Copied"),
+        description: t("تم نسخ الرابط بنجاح", "Link copied successfully"),
       });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast({
-        title: "خطأ",
-        description: "لم نتمكن من نسخ الرابط",
+        title: t("خطأ", "Error"),
+        description: t("لم نتمكن من نسخ الرابط", "Could not copy the link"),
         variant: "destructive",
       });
     }
@@ -91,17 +93,17 @@ const Footer = () => {
             <DialogTrigger asChild>
               <button
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 text-primary-foreground text-sm font-medium transition-all duration-300 hover:scale-105 active:scale-95"
-                aria-label="مشاركة الموقع"
+                aria-label={t("مشاركة الموقع", "Share the website")}
               >
                 <Share2 className="w-4 h-4" />
-                <span>شارك الموقع</span>
+                <span>{t("شارك الموقع", "Share website")}</span>
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md" dir="rtl">
+            <DialogContent className="sm:max-w-md" dir={lang === "ar" ? "rtl" : "ltr"}>
               <DialogHeader>
-                <DialogTitle className="text-center">مشاركة الموقع</DialogTitle>
+                <DialogTitle className="text-center">{t("مشاركة الموقع", "Share the website")}</DialogTitle>
                 <DialogDescription className="text-center">
-                  انسخ الرابط أو شاركه مباشرة مع من تحب
+                  {t("انسخ الرابط أو شاركه مباشرة مع من تحب", "Copy the link or share it directly with your loved ones")}
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col gap-4 py-4">
@@ -117,7 +119,7 @@ const Footer = () => {
                     size="icon"
                     onClick={handleCopy}
                     className="shrink-0"
-                    aria-label="نسخ الرابط"
+                    aria-label={t("نسخ الرابط", "Copy link")}
                   >
                     {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
@@ -128,7 +130,7 @@ const Footer = () => {
                   className="w-full gap-2"
                 >
                   <Share2 className="w-4 h-4" />
-                  <span>مشاركة عبر تطبيقات الجوال</span>
+                  <span>{t("مشاركة عبر تطبيقات الجوال", "Share via mobile apps")}</span>
                 </Button>
                 <a
                   href={SHARE_URL}
@@ -137,7 +139,7 @@ const Footer = () => {
                   className="inline-flex items-center justify-center gap-2 text-sm text-primary hover:underline"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  <span>فتح الموقع</span>
+                  <span>{t("فتح الموقع", "Open website")}</span>
                 </a>
               </div>
             </DialogContent>
@@ -145,9 +147,9 @@ const Footer = () => {
 
           {/* Main Title */}
           <div className="max-w-2xl mx-auto space-y-2">
-            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">الجبل ما ينسى اللي زاره.. استودعناك الله</p>
-            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">وإن ما ساقتك الأيام لنا مرة ثانية</p>
-            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">يا جعل لقانا في جنات النعيم</p>
+            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">{t("الجبل ما ينسى اللي زاره.. استودعناك الله", "The mountain never forgets those who visited it.. we entrust you to God")}</p>
+            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">{t("وإن ما ساقتك الأيام لنا مرة ثانية", "And if the days do not bring you back to us again")}</p>
+            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">{t("يا جعل لقانا في جنات النعيم", "May our meeting be in the gardens of paradise")}</p>
           </div>
 
           {/* Social Links */}
@@ -167,12 +169,12 @@ const Footer = () => {
           {/* Copyright */}
           <div className="border-t border-white/20 pt-8 space-y-3">
             <p className="text-primary-foreground/80">
-              © 2024 اكتشف فيفاء - جميع الحقوق محفوظة
+              {t("© 2024 اكتشف فيفاء - جميع الحقوق محفوظة", "© 2024 Discover Faifa - All rights reserved")}
             </p>
             <p className="flex items-center justify-center gap-2 text-primary-foreground/70">
-              <span>صمم بكل</span>
+              <span>{t("صمم بكل", "Made with")}</span>
               <Heart className="w-4 h-4 text-red-400 fill-current" />
-              <span>لأجمل أماكن السعودية</span>
+              <span>{t("لأجمل أماكن السعودية", "for the most beautiful places in Saudi Arabia")}</span>
             </p>
           </div>
         </div>
