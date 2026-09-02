@@ -5,12 +5,13 @@ import CategorySection from "@/components/CategorySection";
 import PlaceCard from "@/components/PlaceCard";
 import DeveloperSection from "@/components/DeveloperSection";
 import Footer from "@/components/Footer";
-import VisitorCounter from "@/components/VisitorCounter";
+import CompactControlBar from "@/components/CompactControlBar";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
-import ThemeToggle from "@/components/ThemeToggle";
 import FloatingChatButton from "@/components/FloatingChatButton";
+import { ChatOpenProvider } from "@/contexts/ChatOpenContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+
 
 const Index = () => {
   const { lang, t } = useLanguage();
