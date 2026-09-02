@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { MessageCircle, X } from "lucide-react";
 import AIChatWidget from "./AIChatWidget";
+import { useChatOpen } from "@/contexts/ChatOpenContext";
 
 const FloatingChatButton = () => {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useChatOpen();
   const [showGreeting, setShowGreeting] = useState(false);
   const [greetingDismissed, setGreetingDismissed] = useState(false);
 
@@ -28,7 +29,7 @@ const FloatingChatButton = () => {
   }, [open]);
 
   const handleToggle = () => {
-    setOpen((v) => !v);
+    setOpen(!open);
     setShowGreeting(false);
     setGreetingDismissed(true);
   };

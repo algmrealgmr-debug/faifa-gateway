@@ -5,12 +5,13 @@ import CategorySection from "@/components/CategorySection";
 import PlaceCard from "@/components/PlaceCard";
 import DeveloperSection from "@/components/DeveloperSection";
 import Footer from "@/components/Footer";
-import VisitorCounter from "@/components/VisitorCounter";
+import CompactControlBar from "@/components/CompactControlBar";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
-import ThemeToggle from "@/components/ThemeToggle";
 import FloatingChatButton from "@/components/FloatingChatButton";
+import { ChatOpenProvider } from "@/contexts/ChatOpenContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+
 
 const Index = () => {
   const { lang, t } = useLanguage();
@@ -18,21 +19,14 @@ const Index = () => {
   const isRootPath = path === "/";
 
   return (
-    <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
-      {isRootPath && <Header />}
-      <Navigation />
-      
-      {/* Visitor Counter Section */}
-      <section className="container mx-auto px-6 py-8 text-center">
-        <VisitorCounter />
-      </section>
+    <ChatOpenProvider>
+      <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
+        {isRootPath && <Header />}
+        <Navigation />
+        <CompactControlBar />
 
-      {/* Theme Toggle */}
-      <section className="container mx-auto px-6">
-        <ThemeToggle />
-      </section>
-      
-      <main className="container mx-auto px-6 md:px-8 py-16 space-y-20">
+        <main className="container mx-auto px-6 md:px-8 py-6 space-y-12">
+
         {/* Hotels Section */}
         <CategorySection
           id="hotels"
@@ -199,6 +193,7 @@ const Index = () => {
       <BackToTop />
       <FloatingChatButton />
     </div>
+    </ChatOpenProvider>
   );
 };
 

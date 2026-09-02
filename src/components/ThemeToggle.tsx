@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const ThemeToggle = () => {
+interface ThemeToggleProps {
+  compact?: boolean;
+}
+
+const ThemeToggle = ({ compact }: ThemeToggleProps) => {
+  const { t } = useLanguage();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== "undefined") {
       return document.documentElement.classList.contains("dark");
@@ -28,7 +34,12 @@ const ThemeToggle = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center py-6">
+    <div className={compact ? "flex flex-col items-center gap-0.5" : "flex items-center justify-center py-6"}>
+      {compact && (
+        <span className="text-[10px] leading-none text-muted-foreground/60 tracking-wide">
+          {t("النمط الليلية", "Dark Mode")}
+        </span>
+      )}
       <button
         onClick={() => setIsDark(!isDark)}
         className="relative flex items-center w-16 h-8 rounded-full bg-muted border border-border shadow-soft transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
@@ -36,7 +47,7 @@ const ThemeToggle = () => {
       >
         <motion.div
           className="absolute w-6 h-6 rounded-full bg-primary shadow-md flex items-center justify-center"
-          animate={{ x: isDark ? 4 : 32 }}
+          animate={{ x: isDark ? 4 : 36 }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         >
           {isDark ? (

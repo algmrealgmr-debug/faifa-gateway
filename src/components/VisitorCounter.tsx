@@ -4,7 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 const SESSION_FLAG = "visitor-counted";
 
-const VisitorCounter = () => {
+interface VisitorCounterProps {
+  compact?: boolean;
+}
+
+const VisitorCounter = ({ compact }: VisitorCounterProps) => {
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
   const { t } = useLanguage();
 
@@ -53,7 +57,7 @@ const VisitorCounter = () => {
   }, []);
 
   return (
-    <div className="text-center text-sm text-muted-foreground mt-5">
+    <div className={`text-center text-sm text-muted-foreground ${compact ? "" : "mt-5"}`}>
       {t("عدد الزوار:", "Visitors:")}{" "}
       <span className="font-semibold">{visitorCount ?? "—"}</span>
     </div>
