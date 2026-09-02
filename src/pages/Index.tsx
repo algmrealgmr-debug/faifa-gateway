@@ -19,21 +19,14 @@ const Index = () => {
   const isRootPath = path === "/";
 
   return (
-    <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
-      {isRootPath && <Header />}
-      <Navigation />
-      
-      {/* Visitor Counter Section */}
-      <section className="container mx-auto px-6 py-8 text-center">
-        <VisitorCounter />
-      </section>
+    <ChatOpenProvider>
+      <div className="min-h-screen bg-background" dir={lang === "ar" ? "rtl" : "ltr"}>
+        {isRootPath && <Header />}
+        <Navigation />
+        <CompactControlBar />
 
-      {/* Theme Toggle */}
-      <section className="container mx-auto px-6">
-        <ThemeToggle />
-      </section>
-      
-      <main className="container mx-auto px-6 md:px-8 py-16 space-y-20">
+        <main className="container mx-auto px-6 md:px-8 py-6 space-y-12">
+
         {/* Hotels Section */}
         <CategorySection
           id="hotels"
