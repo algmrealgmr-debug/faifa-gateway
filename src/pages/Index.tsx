@@ -193,6 +193,7 @@ const Index = () => {
       <BackToTop />
       <FloatingChatButton />
     </div>
+    </ChatOpenProvider>
   );
 };
 
