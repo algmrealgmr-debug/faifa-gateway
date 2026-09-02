@@ -1,33 +1,61 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+
+const SESSION_FLAG = "visitor-counted";
 
 const VisitorCounter = () => {
-  const [visitorCount, setVisitorCount] = useState(5078);
+  const [visitorCount, setVisitorCount] = useState<number | null>(null);
   const { t } = useLanguage();
 
   useEffect(() => {
-    // نقرأ العدد من LocalStorage
-    let countStr = localStorage.getItem("visitor-count");
-    let count: number;
+    let cancelled = false;
 
-    if (!countStr) {
-      // إذا ما فيه عدد محفوظ، نبدأ من 5078
-      count = 5078;
-    } else {
-      count = parseInt(countStr);
-      count++;
-    }
+    const run = async () => {
+      const alreadyCounted = sessionStorage.getItem(SESSION_FLAG) === "true";
 
-    // نخزنه في LocalStorage عشان يبقى ثابت على نفس المتصفح
-    localStorage.setItem("visitor-count", count.toString());
+      if (!alreadyCounted) {
+        const { data, error } = await supabase.rpc("increment_visitor_count");
+        if (!error && typeof data === "number") {
+          sessionStorage.setItem(SESSION_FLAG, "true");
+          if (!cancelled) setVisitorCount(data);
+          return;
+        }
+      }
 
-    // نعرض العدد
-    setVisitorCount(count);
+      const { data } = await supabase
+        .from("site_analytics")
+        .select("visitor_count")
+        .eq("id", 1)
+        .maybeSingle();
+
+      if (!cancelled && data) setVisitorCount(data.visitor_count);
+    };
+
+    run();
+
+    const channel = supabase
+      .channel("site-analytics")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "site_analytics" },
+        (payload) => {
+          const next = (payload.new as { visitor_count?: number })?.visitor_count;
+          if (typeof next === "number") setVisitorCount(next);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (
     <div className="text-center text-sm text-muted-foreground mt-5">
-      {t("عدد الزوار:", "Visitors:")} <span className="font-semibold">{visitorCount}</span>
+      {t("عدد الزوار:", "Visitors:")}{" "}
+      <span className="font-semibold">{visitorCount ?? "—"}</span>
     </div>
   );
 };
