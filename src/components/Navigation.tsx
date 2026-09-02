@@ -103,20 +103,20 @@ const Navigation = () => {
 
   return (
     <nav className={`bg-mountain text-mountain-foreground sticky top-0 z-50 transition-all duration-500 ${isScrolled ? 'shadow-lg shadow-primary/10 border-b border-primary/20' : 'shadow-lg'}`}>
-      <div className="container mx-auto px-6">
-        <ul className="flex justify-center items-center flex-wrap gap-6 py-4">
+      <div className="container mx-auto px-4 md:px-6">
+        <ul className="flex justify-center items-center flex-nowrap gap-2 md:gap-6 py-3 overflow-x-auto">
           {navItems.map((item, index) => {
             const IconComponent = item.icon;
             const isGlowing = glowIndex === index;
             const isActive = activeSection === item.id;
             return (
-              <li key={item.id}>
+              <li key={item.id} className="flex-shrink-0">
                 <button
                   onClick={() => scrollToSection(item.id)}
-                  className={`flex items-center gap-3 px-6 py-3 rounded-lg transition-all duration-300 hover:bg-accent hover:text-accent-foreground text-lg ${isActive ? 'bg-accent text-accent-foreground font-bold' : 'font-medium'} ${isGlowing ? 'animate-nav-pulse ring-2 ring-primary/50' : ''}`}
+                  className={`flex items-center gap-2 px-3 py-2 md:px-5 md:py-2.5 rounded-lg transition-all duration-300 hover:bg-accent hover:text-accent-foreground text-sm md:text-base whitespace-nowrap ${isActive ? 'bg-accent text-accent-foreground font-bold' : 'font-medium'} ${isGlowing ? 'animate-nav-pulse ring-2 ring-primary/50' : ''}`}
                   aria-label={item.ariaLabel}
                 >
-                  <IconComponent className={`w-5 h-5 transition-transform duration-500 ${isGlowing ? 'animate-icon-bounce' : ''}`} />
+                  <IconComponent className={`w-4 h-4 md:w-5 md:h-5 transition-transform duration-500 ${isGlowing ? 'animate-icon-bounce' : ''}`} />
                   <span>{item.label}</span>
                 </button>
               </li>
@@ -124,8 +124,8 @@ const Navigation = () => {
           })}
         </ul>
         {/* Guide text */}
-        <div className={`text-center pb-3 transition-all duration-500 ${showGuideText ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden'}`}>
-          <span className="text-sm text-primary-foreground/70">{t("اختر ما يناسبك", "Choose what suits you")}</span>
+        <div className={`text-center pb-2 transition-all duration-500 ${showGuideText ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+          <span className="text-xs text-primary-foreground/70">{t("اختر ما يناسبك", "Choose what suits you")}</span>
         </div>
       </div>
     </nav>
