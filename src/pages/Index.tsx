@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import CompactControlBar from "@/components/CompactControlBar";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
-import FloatingChatButton from "@/components/FloatingChatButton";
+import ChatModal from "@/components/ChatModal";
 import { ChatOpenProvider } from "@/contexts/ChatOpenContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
