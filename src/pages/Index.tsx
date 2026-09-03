@@ -191,7 +191,7 @@ const Index = () => {
 
       <Footer />
       <BackToTop />
-      <FloatingChatButton />
+      <ChatModal />
     </div>
     </ChatOpenProvider>
   );
