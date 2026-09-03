@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import CompactControlBar from "@/components/CompactControlBar";
 import InteractiveMap from "@/components/InteractiveMap";
 import BackToTop from "@/components/BackToTop";
-import FloatingChatButton from "@/components/FloatingChatButton";
+import ChatModal from "@/components/ChatModal";
 import { ChatOpenProvider } from "@/contexts/ChatOpenContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -25,7 +25,7 @@ const Index = () => {
         <Navigation />
         <CompactControlBar />
 
-        <main className="container mx-auto px-6 md:px-8 py-6 space-y-12">
+        <main className="container mx-auto px-6 md:px-8 py-4 space-y-10">
 
         {/* Hotels Section */}
         <CategorySection
@@ -191,7 +191,7 @@ const Index = () => {
 
       <Footer />
       <BackToTop />
-      <FloatingChatButton />
+      <ChatModal />
     </div>
     </ChatOpenProvider>
   );

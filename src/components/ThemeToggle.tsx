@@ -34,7 +34,10 @@ const ThemeToggle = ({ compact }: ThemeToggleProps) => {
   }, []);
 
   return (
-    <div className={compact ? "flex flex-col items-center gap-0.5" : "flex items-center justify-center py-6"}>
+    <div
+      dir="ltr"
+      className={compact ? "flex flex-col items-center gap-0.5" : "flex items-center justify-center py-6"}
+    >
       {compact && (
         <span className="text-[10px] leading-none text-muted-foreground/60 tracking-wide">
           {t("النمط الليلية", "Dark Mode")}
