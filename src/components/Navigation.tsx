@@ -124,7 +124,7 @@ const Navigation = () => {
           })}
         </ul>
         {/* Guide text */}
-        <div className={`text-center pb-2 transition-all duration-500 ${showGuideText ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+        <div className={`text-center transition-all duration-500 ${showGuideText ? 'opacity-100 max-h-10 pb-2' : 'opacity-0 max-h-0 overflow-hidden pb-0'}`}>
           <span className="text-xs text-primary-foreground/70">{t("اختر ما يناسبك", "Choose what suits you")}</span>
         </div>
       </div>

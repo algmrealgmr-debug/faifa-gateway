@@ -7,8 +7,8 @@ interface CategorySectionProps {
 
 const CategorySection = ({ id, title, icon, children }: CategorySectionProps) => {
   return (
-    <section id={id} className="scroll-mt-20 py-8">
-      <div className="flex items-center justify-center gap-3 mb-8">
+    <section id={id} className="scroll-mt-20 py-6">
+      <div className="flex items-center justify-center gap-3 mb-6">
         <div className="text-primary text-2xl">{icon}</div>
         <h2 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">{title}</h2>
       </div>

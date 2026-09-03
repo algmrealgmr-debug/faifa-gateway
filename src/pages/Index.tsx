@@ -25,7 +25,7 @@ const Index = () => {
         <Navigation />
         <CompactControlBar />
 
-        <main className="container mx-auto px-6 md:px-8 py-6 space-y-12">
+        <main className="container mx-auto px-6 md:px-8 py-4 space-y-10">
 
         {/* Hotels Section */}
         <CategorySection
