@@ -40,7 +40,7 @@ const ThemeToggle = ({ compact }: ThemeToggleProps) => {
     >
       {compact && (
         <span className="text-[10px] leading-none text-muted-foreground/60 tracking-wide">
-          {t("النمط الليلية", "Dark Mode")}
+          {t("النمط الليلي", "Dark Mode")}
         </span>
       )}
       <button
