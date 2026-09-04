@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Code, Instagram, X, Copy, Check } from "lucide-react";
+import { Instagram, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Dialog,
