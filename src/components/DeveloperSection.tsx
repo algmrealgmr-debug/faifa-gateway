@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import stcPayLogoAsset from "@/assets/stc-pay-logo.png.asset.json";
 import stcPayQrAsset from "@/assets/stc-pay-qr.jpeg.asset.json";
+import developerAvatarAsset from "@/assets/developer-avatar.png.asset.json";
 
 const IBAN = "SA5878000000001019616618";
 
