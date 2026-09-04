@@ -146,10 +146,8 @@ const Footer = () => {
           </Dialog>
 
           {/* Main Title */}
-          <div className="max-w-2xl mx-auto space-y-2">
+          <div className="max-w-2xl mx-auto">
             <p className="text-base md:text-lg text-primary-foreground/90 font-medium">{t("الجبل ما ينسى اللي زاره.. استودعناك الله", "The mountain never forgets those who visited it.. we entrust you to God")}</p>
-            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">{t("وإن ما ساقتك الأيام لنا مرة ثانية", "And if the days do not bring you back to us again")}</p>
-            <p className="text-base md:text-lg text-primary-foreground/90 font-medium">{t("يا جعل لقانا في جنات النعيم", "May our meeting be in the gardens of paradise")}</p>
           </div>
 
           {/* Social Links */}
