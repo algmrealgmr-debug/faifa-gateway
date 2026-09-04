@@ -44,7 +44,7 @@ const DeveloperSection = () => {
       {/* Developer */}
       <div className="flex flex-col items-center gap-1.5">
         <p className="text-[11px] text-muted-foreground tracking-wide">
-          {t("مطور الموقع", "Website Developer")}
+          {t('مطور الموقع "روح"', 'Website Developer "Rouh"')}
         </p>
         <a
           href="https://www.instagram.com/wu3x?igsh=MTJpMDJsaTV2d3pvOQ%3D%3D&utm_source=qr"
@@ -53,6 +53,11 @@ const DeveloperSection = () => {
           className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-white rounded-full border border-purple-100 hover:border-purple-200 hover:scale-105 transition-all duration-300 shadow-sm"
           aria-label={t("زيارة حساب المطور على إنستقرام", "Visit the developer's Instagram")}
         >
+          <img
+            src={developerAvatarAsset.url}
+            alt={t("روح", "Rouh")}
+            className="w-5 h-5 rounded-full object-cover border border-purple-100"
+          />
           <Instagram className="w-5 h-5 text-purple-900" />
           <span className="text-sm font-medium text-purple-900">wu3x</span>
         </a>
